@@ -43,7 +43,7 @@ Set up a git repo the way you actually work — one guided flow for hooks, `.git
 - **⚙️ Curated git config** — Apply practical presets with `--global` or `--local` scope, with idempotency detection.
 - **💾 Save & reuse builds** — Save configurations and apply them to any project with one command.
 - **🔒 Repository locks** — Block commits and pushes during agent sessions with `gitkit lock` / `gitkit unlock` — useful when autonomous agents are editing the repo.
-- **⬆️ Version check & self-update** — Automatic check for new releases with optional auto-update; disable with `GITKIT_NO_UPDATE_CHECK`.
+- **⬆️ Version check & self-update** — A silent background check on every run, plus an explicit `gitkit update` that always asks before replacing the binary; disable the background check with `GITKIT_NO_UPDATE_CHECK`.
 - **📦 Single binary** — No Node.js, no Python, no extra runtime.
 
 ---
@@ -214,6 +214,54 @@ gitkit clone https://github.com/user/repo my-project
 ```
 
 The wizard runs automatically after cloning, allowing you to configure hooks, `.gitignore`, `.gitattributes`, and git config in one workflow.
+
+---
+
+## `gitkit update`
+
+Check GitHub for a newer stable release and, only if you confirm, replace the
+running binary in place. It never updates silently: the command always asks
+first, and the answer defaults to **No**.
+
+**Usage:**
+
+```bash
+gitkit update [--check] [--yes]
+```
+
+**Flags:**
+
+| Flag | Description |
+|---|---|
+| `--check` | Read-only: exit `1` when an update is available, `0` when current. Changes nothing. |
+| `--yes` | Skip the confirmation prompt and install immediately. |
+
+**What it does:**
+
+- Fetches the latest **stable** GitHub release — drafts, prereleases and
+  non-semver tags are ignored — and compares it to the running version.
+- Downloads the release asset for the current target triple (for example
+  `gitkit-v0.6.0-x86_64-unknown-linux-musl.tar.gz`) and verifies its SHA256
+  against the release's `SHA256SUMS.txt` whenever one ships.
+- Swaps the binary atomically — a temporary file in the same directory, then a
+  rename — so the replacement either happens completely or not at all.
+- Refuses to touch a cargo-managed install: it prints
+  `cargo install --force gitkit` instead of downloading anything.
+- Fails loudly (message plus non-zero exit) on network or API errors, unlike
+  the background check, which stays silent so it can never interrupt your work.
+
+`GITKIT_NO_UPDATE_CHECK` only disables the background check; `gitkit update`
+always does what you asked when you run it.
+
+**Examples:**
+
+```bash
+# Just tell me whether something newer exists (exit 1 = update available)
+gitkit update --check
+
+# Update to the latest stable release, asking before anything changes
+gitkit update
+```
 
 ---
 

@@ -41,6 +41,25 @@ offers to update if a newer version is available. The update replaces the
 running binary in place — no need to reinstall or restart your shell between
 commands.
 
+### Explicit update
+
+Prefer to decide yourself? Run the check on demand:
+
+```bash
+gitkit update          # asks first (default: No), then updates in place
+gitkit update --check  # read-only: exit 1 when an update exists, 0 when current
+gitkit update --yes    # skip the prompt
+```
+
+`gitkit update` fetches the latest **stable** release (drafts and
+prereleases are ignored), downloads the asset for your platform — for example
+`gitkit-v0.6.0-x86_64-unknown-linux-musl.tar.gz` — verifies its SHA256 against
+the release's `SHA256SUMS.txt` when the release ships one, and replaces the
+running binary atomically with a same-directory temporary file plus a rename.
+A network or API failure exits non-zero with a message; the background check
+below stays silent so it can never interrupt your work. `GITKIT_NO_UPDATE_CHECK`
+disables only the background check, never the explicit command.
+
 ### Disable update checks
 
 If you prefer to manage updates yourself, disable the check with:

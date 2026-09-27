@@ -13,6 +13,11 @@ use std::time::Duration;
 use serde::Deserialize;
 
 mod install;
+#[cfg(test)]
+mod tests;
+pub mod update;
+
+pub use update::run_update;
 
 const GITHUB_REPO: &str = "UniverLab/gitkit";
 const HTTP_TIMEOUT: Duration = Duration::from_secs(3);
@@ -87,55 +92,4 @@ fn is_newer(current: &str, latest: &str) -> bool {
         )
     };
     parse(latest) > parse(current)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn is_newer_minor_version() {
-        assert!(is_newer("v0.9.0", "v0.10.0"));
-    }
-
-    #[test]
-    fn is_newer_major_version() {
-        assert!(is_newer("v0.99.99", "v1.0.0"));
-    }
-
-    #[test]
-    fn is_newer_equal_versions_not_newer() {
-        assert!(!is_newer("v0.4.0", "v0.4.0"));
-    }
-
-    #[test]
-    fn is_newer_older_is_not_newer() {
-        assert!(!is_newer("v1.0.0", "v0.9.0"));
-    }
-
-    #[test]
-    fn is_newer_handles_missing_v_prefix_on_current() {
-        assert!(is_newer("0.4.0", "v0.5.0"));
-    }
-
-    #[test]
-    fn is_newer_handles_missing_v_prefix_on_latest() {
-        assert!(is_newer("v0.4.0", "0.5.0"));
-    }
-
-    #[test]
-    fn is_newer_handles_missing_v_prefix_on_both() {
-        assert!(is_newer("0.4.0", "0.5.0"));
-    }
-
-    #[test]
-    fn update_check_disabled_when_var_is_set() {
-        assert!(update_check_disabled(Some(String::new())));
-        assert!(update_check_disabled(Some("1".to_string())));
-    }
-
-    #[test]
-    fn update_check_not_disabled_when_var_is_absent() {
-        assert!(!update_check_disabled(None));
-    }
 }

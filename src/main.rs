@@ -66,11 +66,24 @@ enum Command {
     Unlock,
     /// Remove gitkit hooks from every repository it has touched
     Uninstall(uninstall::UninstallArgs),
+    /// Check for a newer stable release and install it (asks first; refuses cargo installs)
+    Update {
+        /// Only report whether an update exists: exit 1 when one does, 0 when current
+        #[arg(long)]
+        check: bool,
+        /// Skip the confirmation prompt
+        #[arg(long)]
+        yes: bool,
+    },
 }
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
-    autoupdate::check_for_update();
+    // The explicit command fetches and reports on its own, loudly — running
+    // the silent background check too would only double the requests.
+    if !matches!(&cli.command, Some(Command::Update { .. })) {
+        autoupdate::check_for_update();
+    }
     match cli.command {
         Some(Command::Init) | None => init::run(),
         Some(Command::Status(args)) => status::run(args),
@@ -83,5 +96,11 @@ fn main() -> Result<()> {
         Some(Command::Lock(args)) => lock::run(args),
         Some(Command::Unlock) => lock::unlock(),
         Some(Command::Uninstall(args)) => uninstall::run(args),
+        Some(Command::Update { check, yes }) => {
+            // Non-zero exit codes (`--check` finds an update, a missing
+            // binary in the archive) and errors are reported by the command.
+            let code = autoupdate::run_update(check, yes)?;
+            std::process::exit(code);
+        }
     }
 }

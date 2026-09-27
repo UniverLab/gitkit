@@ -101,6 +101,23 @@ Scope: `--global` (all repos) or `--local` (current repo). Default is
 | `gitkit build apply <name>` | Apply a saved build |
 | `gitkit build delete <name>` | Delete a saved build |
 
+## Update
+
+| Command | Description |
+|---|---|
+| `gitkit update` | Fetch the latest stable release and ask before replacing the running binary |
+| `gitkit update --check` | Report only: exit `1` when an update exists, `0` when current; changes nothing |
+| `gitkit update --yes` | Skip the confirmation prompt |
+
+`gitkit update` is explicit: it always asks first and the answer defaults to
+**No**, so gitkit never rewrites itself behind your back. Drafts, prereleases
+and non-semver tags are skipped, the downloaded asset is SHA256-verified
+against the release's `SHA256SUMS.txt` when one ships, and the binary is
+swapped atomically (same-directory temporary file plus rename). A cargo-managed
+install is left alone — the command prints `cargo install --force gitkit`.
+Network errors exit non-zero with a message; the background check
+(`GITKIT_NO_UPDATE_CHECK`) remains silent.
+
 ## Global flags
 
 | Flag | Description |

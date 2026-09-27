@@ -165,7 +165,9 @@ fn replace_binary(tmp_path: &Path, target: &Path) -> Result<()> {
 }
 
 fn download_and_extract(tag: &str, arch: &str, os: &str, output: &Path) -> Result<()> {
-    let archive_name = format!("gitkit-{tag}-{arch}-{os}.tar.gz");
+    // Asset naming has one source of truth: the explicit updater, which is
+    // read against the release workflow (`{binary}-{tag}-{target}.tar.gz`).
+    let archive_name = super::update::asset_name(tag, &format!("{arch}-{os}"));
     let url = format!("https://github.com/{GITHUB_REPO}/releases/download/{tag}/{archive_name}");
 
     let resp = ureq::get(&url)
