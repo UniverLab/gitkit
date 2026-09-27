@@ -57,7 +57,8 @@ prereleases are ignored), downloads the asset for your platform — for example
 the release's `SHA256SUMS.txt` when the release ships one, and replaces the
 running binary atomically with a same-directory temporary file plus a rename.
 A network or API failure exits non-zero with a message; the background check
-below stays silent so it can never interrupt your work. `GITKIT_NO_UPDATE_CHECK`
+below prints at most a one-line notice so it can never interrupt your work.
+`GITKIT_NO_UPDATE_CHECK`
 disables only the background check, never the explicit command.
 
 ### Disable update checks

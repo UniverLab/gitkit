@@ -1,5 +1,7 @@
-//! Update check: looks for a newer GitHub release and, on confirmation,
-//! hands off to [`install`] to replace the running binary.
+//! Update check: looks for a newer GitHub release and prints a one-line
+//! notice pointing at `gitkit update`. It never prompts and never installs —
+//! the explicit command in [`update`] is the only path that replaces the
+//! binary, and it always asks first.
 //!
 //! Called once from `main`, before any subcommand runs — gitkit's own
 //! binary is never invoked from inside a git hook (the hooks it installs
@@ -12,7 +14,6 @@ use std::time::Duration;
 
 use serde::Deserialize;
 
-mod install;
 #[cfg(test)]
 mod tests;
 pub mod update;
@@ -48,18 +49,7 @@ pub fn check_for_update() {
     }
 
     println!("  \x1b[33m⬆  Update available:\x1b[0m {current} → {latest}");
-    let Ok(install) = inquire::Confirm::new("Install now?")
-        .with_default(true)
-        .prompt()
-    else {
-        return;
-    };
-    if !install {
-        println!();
-        return;
-    }
-
-    install::run(&latest);
+    println!("     Run \x1b[36mgitkit update\x1b[0m when you want it — gitkit never replaces itself on your behalf.");
 }
 
 fn fetch_latest_tag() -> Option<String> {

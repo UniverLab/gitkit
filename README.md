@@ -43,7 +43,7 @@ Set up a git repo the way you actually work — one guided flow for hooks, `.git
 - **⚙️ Curated git config** — Apply practical presets with `--global` or `--local` scope, with idempotency detection.
 - **💾 Save & reuse builds** — Save configurations and apply them to any project with one command.
 - **🔒 Repository locks** — Block commits and pushes during agent sessions with `gitkit lock` / `gitkit unlock` — useful when autonomous agents are editing the repo.
-- **⬆️ Version check & self-update** — A silent background check on every run, plus an explicit `gitkit update` that always asks before replacing the binary; disable the background check with `GITKIT_NO_UPDATE_CHECK`.
+- **⬆️ Version check & update** — Every run checks GitHub and, when a newer release exists, prints a one-line notice (it never installs anything); `gitkit update` is the path that updates, and it always asks first. Disable the background check with `GITKIT_NO_UPDATE_CHECK`.
 - **📦 Single binary** — No Node.js, no Python, no extra runtime.
 
 ---
@@ -248,7 +248,8 @@ gitkit update [--check] [--yes]
 - Refuses to touch a cargo-managed install: it prints
   `cargo install --force gitkit` instead of downloading anything.
 - Fails loudly (message plus non-zero exit) on network or API errors, unlike
-  the background check, which stays silent so it can never interrupt your work.
+  the background check, which prints at most a one-line notice so it can never
+  interrupt your work.
 
 `GITKIT_NO_UPDATE_CHECK` only disables the background check; `gitkit update`
 always does what you asked when you run it.

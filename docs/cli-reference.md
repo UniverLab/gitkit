@@ -115,8 +115,9 @@ and non-semver tags are skipped, the downloaded asset is SHA256-verified
 against the release's `SHA256SUMS.txt` when one ships, and the binary is
 swapped atomically (same-directory temporary file plus rename). A cargo-managed
 install is left alone — the command prints `cargo install --force gitkit`.
-Network errors exit non-zero with a message; the background check
-(`GITKIT_NO_UPDATE_CHECK`) remains silent.
+Network errors exit non-zero with a message; the background
+check (`GITKIT_NO_UPDATE_CHECK`) only prints a one-line notice pointing at
+`gitkit update` and never installs.
 
 ## Global flags
 
