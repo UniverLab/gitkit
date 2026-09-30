@@ -115,39 +115,45 @@ fn proxy_value(
     })
 }
 
-/// `NO_PROXY` / `no_proxy`, comma-separated and case-insensitive. Entry
-/// semantics mirror ureq 3 — the engine behind the sibling tools — where a
-/// bare name matches that host exactly and does *not* cover subdomains.
+/// `NO_PROXY` / `no_proxy`, comma-separated and case-insensitive. Entries
+/// are matched lowercased so one comparison rule covers every shape.
 fn is_no_proxy(lookup: &dyn Fn(&str) -> Option<String>, host: &str) -> bool {
     let Some(entries) = lookup("NO_PROXY").or_else(|| lookup("no_proxy")) else {
         return false;
     };
     let host = host.to_ascii_lowercase();
-    entries
-        .split(',')
-        .any(|entry| no_proxy_entry_matches(entry.trim(), &host))
+    entries.split(',').any(|entry| {
+        let entry = entry.trim().to_ascii_lowercase();
+        no_proxy_entry_matches(&entry, &host)
+    })
 }
 
-/// One `NO_PROXY` entry against a lowercased host: `*` matches everything,
-/// `*.d` and `.d` match the suffix, `d*` and `d.` match the prefix, and a
-/// bare `d` matches that host exactly.
+/// One lowercased `NO_PROXY` entry against a lowercased host. Bare domains
+/// follow curl's rule — what reqwest applies for texforge and ghscaff — so
+/// `github.com` matches that host *and* every subdomain, and a leading `.`
+/// or `*` is equivalent to the bare name; a lone `*` matches everything.
+/// Trailing `*` / `.` keep the prefix forms ureq 3 (demostage) accepts, so
+/// a bypass listed by either engine's syntax is bypassed here too.
 fn no_proxy_entry_matches(entry: &str, host: &str) -> bool {
-    if let Some(suffix) = entry.strip_prefix('*') {
-        return host.ends_with(&suffix.to_ascii_lowercase());
+    if entry == "*" {
+        return true;
     }
-    if entry.starts_with('.') {
-        return host.ends_with(&entry.to_ascii_lowercase());
+    if entry.starts_with('.') || entry.starts_with("*.") {
+        return domain_matches(entry.trim_start_matches(['.', '*']), host);
     }
-    if let Some(prefix) = entry.strip_suffix('*') {
-        return host.starts_with(&prefix.to_ascii_lowercase());
+    if entry.ends_with('*') {
+        return host.starts_with(entry.trim_end_matches('*'));
     }
     if entry.ends_with('.') {
-        return host.starts_with(&entry.to_ascii_lowercase());
+        return host.starts_with(entry);
     }
-    if entry.is_empty() {
-        return false;
-    }
-    host == entry.to_ascii_lowercase()
+    domain_matches(entry, host)
+}
+
+/// `github.com` matches `github.com` and `api.github.com` but never
+/// `xgithub.com` — the dot-boundary suffix rule curl and reqwest apply.
+fn domain_matches(domain: &str, host: &str) -> bool {
+    !domain.is_empty() && (host == domain || host.ends_with(&format!(".{domain}")))
 }
 
 /// Split `https://host[:port]/path` into `(scheme, lowercased host)`. Every
@@ -318,13 +324,30 @@ mod tests {
             &[("NO_PROXY", "api.github.com")],
             "api.github.com"
         ));
-        assert!(!no_proxy_for(
-            &[("NO_PROXY", "api.github.com")],
-            "github.com"
-        ));
         assert!(
-            !no_proxy_for(&[("NO_PROXY", "github.com")], "api.github.com"),
-            "a bare domain does not cover subdomains"
+            !no_proxy_for(&[("NO_PROXY", "api.github.com")], "github.com"),
+            "a narrower bypass entry never widens upward"
+        );
+        assert!(
+            no_proxy_for(&[("NO_PROXY", "github.com")], "api.github.com"),
+            "a bare domain covers subdomains — curl's rule, what reqwest
+             applies for texforge and ghscaff"
+        );
+        assert!(
+            no_proxy_for(&[("NO_PROXY", "github.com")], "github.com"),
+            "the bare host itself"
+        );
+        assert!(
+            !no_proxy_for(&[("NO_PROXY", "github.com")], "xgithub.com"),
+            "subdomains match at a dot boundary only"
+        );
+        assert!(
+            !no_proxy_for(&[("NO_PROXY", "github.com")], "github.com.example"),
+            "the entry matches a suffix of the host, never a prefix"
+        );
+        assert!(
+            no_proxy_for(&[("NO_PROXY", ".github.com")], "github.com"),
+            "a leading dot is equivalent to the bare name"
         );
         assert!(no_proxy_for(
             &[("NO_PROXY", ".github.com")],
@@ -422,7 +445,9 @@ mod tests {
 
     /// A host listed in `NO_PROXY` bypasses the configured proxy entirely:
     /// the listener must see nothing, and the request fails on its own DNS
-    /// lookup instead (`.invalid` never resolves, so no egress either).
+    /// lookup instead (`.invalid` never resolves, so no egress either). The
+    /// bypass is listed as the bare domain `invalid`, so the curl-style
+    /// subdomain match against `nonexistent.invalid` is what is under test.
     #[serial]
     #[test]
     fn no_proxy_env_bypasses_configured_proxy() {
@@ -433,7 +458,7 @@ mod tests {
             .expect("nonblocking listener");
         let port = listener.local_addr().expect("listener address").port();
         _env.set("HTTPS_PROXY", &format!("http://127.0.0.1:{port}"));
-        _env.set("NO_PROXY", "nonexistent.invalid");
+        _env.set("NO_PROXY", "invalid");
 
         let error = RealFetcher
             .get("https://nonexistent.invalid/releases")

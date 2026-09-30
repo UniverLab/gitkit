@@ -472,6 +472,22 @@ fn background_check_is_quiet_without_network() {
     assert!(!downloader.called.get());
 }
 
+/// The unparsable leg of the exit-2 contract, through the injected seam:
+/// the cause must name itself on one line so the command can report it.
+#[test]
+fn unparsable_release_body_names_the_cause() {
+    let fetcher = FakeFetcher {
+        body: "<html>rate-limited, not JSON</html>".to_string(),
+    };
+    let error = super::update::fetch_releases_with(&fetcher).unwrap_err();
+    let message = error.to_string();
+    assert!(
+        message.starts_with("unparsable GitHub releases response"),
+        "unexpected: {message}"
+    );
+    assert!(!message.contains('\n'), "one line only: {message}");
+}
+
 // ── Extraction and atomic replacement ───────────────────────────
 
 #[test]

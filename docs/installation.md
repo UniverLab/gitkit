@@ -83,9 +83,9 @@ Add this to your shell profile to make it permanent.
 ### Cargo-installed versions
 
 If gitkit was installed with `cargo install gitkit`, the auto-updater will
-detect this, refuse to replace the file cargo owns, and tell you to run:
+detect this, refuse to replace the file cargo owns, and print:
 
-```bash
+```text
 installed with cargo — run: cargo install --force gitkit
 ```
 
