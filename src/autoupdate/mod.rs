@@ -14,6 +14,7 @@ use std::time::Duration;
 
 use serde::Deserialize;
 
+mod http;
 #[cfg(test)]
 mod tests;
 pub mod update;
@@ -38,8 +39,8 @@ pub fn check_for_update() {
         return;
     };
 
-    let current = format!("v{}", env!("CARGO_PKG_VERSION"));
-    if !is_newer(&current, &latest) {
+    let current = update::current_version();
+    if !is_newer(current, &latest) {
         return;
     }
 
@@ -48,14 +49,18 @@ pub fn check_for_update() {
         return;
     }
 
-    println!("  \x1b[33m⬆  Update available:\x1b[0m {current} → {latest}");
+    println!(
+        "  \x1b[33m⬆  Update available:\x1b[0m {current} → {}",
+        update::display_version(&latest)
+    );
     println!("     Run \x1b[36mgitkit update\x1b[0m when you want it — gitkit never replaces itself on your behalf.");
 }
 
 fn fetch_latest_tag() -> Option<String> {
     let url = format!("https://api.github.com/repos/{GITHUB_REPO}/releases/latest");
-    let resp = ureq::get(&url)
-        .timeout(HTTP_TIMEOUT)
+    let resp = http::agent(&url, HTTP_TIMEOUT)
+        .ok()?
+        .get(&url)
         .set("User-Agent", "gitkit-autoupdate")
         .call()
         .ok()?;

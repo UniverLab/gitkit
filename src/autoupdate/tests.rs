@@ -216,12 +216,24 @@ fn cargo_detect_custom_cargo_home() {
 }
 
 /// The refusal line is a spec literal — it must stay byte-identical to what
-/// `scripts/install.sh` and the README tell cargo users to run.
+/// the docs quote for cargo users (em dash U+2014 included).
 #[test]
 fn cargo_refusal_message_is_the_spec_literal() {
     assert_eq!(
         super::update::CARGO_INSTALL_HINT,
-        "cargo install --force gitkit"
+        "installed with cargo — run: cargo install --force gitkit"
+    );
+}
+
+#[test]
+fn display_version_drops_v_for_messages() {
+    assert_eq!(super::update::display_version("v0.6.0"), "0.6.0");
+    assert_eq!(super::update::display_version("0.6.0"), "0.6.0");
+    // Guard the other half of the contract: only display strips the `v`.
+    // Asset names and download URLs keep the raw release tag.
+    assert_eq!(
+        super::update::asset_name("v0.6.0", "x86_64-unknown-linux-musl"),
+        "gitkit-v0.6.0-x86_64-unknown-linux-musl.tar.gz"
     );
 }
 
@@ -651,8 +663,11 @@ fn install_unsupported_target_errors_before_downloading() {
 
 // ── Loud vs. silent error handling ──────────────────────────────
 
+/// A failed release lookup is not an `Err` any more: both `--check` and a
+/// plain update exit `2`, the cause reaches stderr as one line, and nothing
+/// is downloaded.
 #[test]
-fn explicit_errors_loudly_without_network() {
+fn plain_update_exits_2_without_network() {
     let downloader = recording_downloader(Vec::new(), None);
     let deps = super::update::UpdateDeps {
         current: CURRENT,
@@ -661,12 +676,32 @@ fn explicit_errors_loudly_without_network() {
         cargo_bin: Path::new("/tmp/gitkit-update-test/not-cargo"),
         target: Ok("x86_64-unknown-linux-musl"),
         downloader: &downloader,
-        confirm: &|| false,
+        confirm: &|| panic!("a failed lookup must answer before the prompt"),
     };
-    let error = super::update::run_update_with(false, true, &deps).unwrap_err();
-    assert!(
-        error.to_string().contains("release lookup failed"),
-        "unexpected error: {error:#}"
+    assert_eq!(
+        super::update::run_update_with(false, true, &deps).unwrap(),
+        2
+    );
+    assert!(!downloader.called.get());
+}
+
+/// The third leg of the 0/1/2 contract: `--check` reports a failed lookup
+/// as exit 2 without touching the downloader or the prompt.
+#[test]
+fn check_exit_2_when_lookup_fails() {
+    let downloader = recording_downloader(Vec::new(), None);
+    let deps = super::update::UpdateDeps {
+        current: CURRENT,
+        releases: Err("network is down".to_string()),
+        exe: Path::new("/tmp/gitkit-update-test/gitkit"),
+        cargo_bin: Path::new("/tmp/gitkit-update-test/not-cargo"),
+        target: Ok("x86_64-unknown-linux-musl"),
+        downloader: &downloader,
+        confirm: &|| panic!("a failed lookup must answer before the prompt"),
+    };
+    assert_eq!(
+        super::update::run_update_with(true, false, &deps).unwrap(),
+        2
     );
     assert!(!downloader.called.get());
 }

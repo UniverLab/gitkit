@@ -67,8 +67,11 @@ enum Command {
     /// Remove gitkit hooks from every repository it has touched
     Uninstall(uninstall::UninstallArgs),
     /// Check for a newer stable release and install it (asks first; refuses cargo installs)
+    ///
+    /// Exit codes: 0 = up to date or nothing installed, 1 = update available (--check),
+    /// 2 = the update check could not complete (network, DNS, TLS, HTTP error, unparsable response).
     Update {
-        /// Only report whether an update exists: exit 1 when one does, 0 when current
+        /// Only report whether an update exists: exit 0 if current, exit 1 if an update exists, exit 2 if the check could not complete
         #[arg(long)]
         check: bool,
         /// Skip the confirmation prompt
@@ -97,8 +100,9 @@ fn main() -> Result<()> {
         Some(Command::Unlock) => lock::unlock(),
         Some(Command::Uninstall(args)) => uninstall::run(args),
         Some(Command::Update { check, yes }) => {
-            // Non-zero exit codes (`--check` finds an update, a missing
-            // binary in the archive) and errors are reported by the command.
+            // The exit codes (`0` current, `1` update available in `--check`,
+            // `2` the release lookup could not complete) are produced by the
+            // command itself; it prints its own stderr line and returns them.
             let code = autoupdate::run_update(check, yes)?;
             std::process::exit(code);
         }

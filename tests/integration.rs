@@ -109,6 +109,56 @@ fn cli_build_help() {
 }
 
 #[test]
+fn update_help_documents_exit_codes() {
+    let (success, output) = run_gitkit(&["update", "--help"]);
+    assert!(success, "gitkit update --help should succeed");
+    // clap wraps help lines, so compare against one flattened line.
+    let flat = output.split_whitespace().collect::<Vec<_>>().join(" ");
+    assert!(
+        flat.contains("0 = up to date or nothing installed"),
+        "exit 0 undocumented: {flat}"
+    );
+    assert!(
+        flat.contains("1 = update available"),
+        "exit 1 undocumented: {flat}"
+    );
+    assert!(
+        flat.contains("2 = the update check could not complete"),
+        "exit 2 undocumented: {flat}"
+    );
+    assert!(flat.contains("exit 0"), "--check help: {flat}");
+    assert!(flat.contains("exit 1"), "--check help: {flat}");
+    assert!(flat.contains("exit 2"), "--check help: {flat}");
+}
+
+/// The spec's guideline command: behind a dead proxy the check must fail —
+/// not hang, not pretend an update exists — with exit 2 and one stderr line
+/// naming the cause. Loopback only, so it is deterministic offline.
+#[test]
+fn update_check_through_dead_proxy_exits_2() {
+    let binary = gitkit_binary();
+    let output = Command::new(&binary)
+        // Never let a test hit the network via the update check.
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        .env("HTTPS_PROXY", "http://127.0.0.1:9")
+        .env("NO_PROXY", "")
+        .args(["update", "--check"])
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("Failed to run gitkit");
+    let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+    assert_eq!(
+        output.status.code(),
+        Some(2),
+        "expected exit 2, stderr: {stderr}"
+    );
+    assert!(
+        stderr.starts_with("update check failed:"),
+        "unexpected stderr: {stderr}"
+    );
+}
+
+#[test]
 fn cli_status_outside_repo() {
     let dir = TempDir::new().unwrap();
     let binary = gitkit_binary();

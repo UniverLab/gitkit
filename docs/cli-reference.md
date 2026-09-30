@@ -106,18 +106,25 @@ Scope: `--global` (all repos) or `--local` (current repo). Default is
 | Command | Description |
 |---|---|
 | `gitkit update` | Fetch the latest stable release and ask before replacing the running binary |
-| `gitkit update --check` | Report only: exit `1` when an update exists, `0` when current; changes nothing |
+| `gitkit update --check` | Report only: exit `0` current, `1` update available, `2` check could not complete; changes nothing |
 | `gitkit update --yes` | Skip the confirmation prompt |
+
+**Exit codes** (both forms): `0` up to date or nothing installed, `1` an
+update is available (`--check` only), and `2` the update check could not
+complete — network, DNS, TLS, an HTTP error (≥ 400) or an unparsable
+response — after one stderr line naming the cause.
 
 `gitkit update` is explicit: it always asks first and the answer defaults to
 **No**, so gitkit never rewrites itself behind your back. Drafts, prereleases
 and non-semver tags are skipped, the downloaded asset is SHA256-verified
 against the release's `SHA256SUMS.txt` when one ships, and the binary is
 swapped atomically (same-directory temporary file plus rename). A cargo-managed
-install is left alone — the command prints `cargo install --force gitkit`.
-Network errors exit non-zero with a message; the background
-check (`GITKIT_NO_UPDATE_CHECK`) only prints a one-line notice pointing at
-`gitkit update` and never installs.
+install is left alone — the command prints
+`installed with cargo — run: cargo install --force gitkit`. Requests honour
+`HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY` (upper and lower case), the same way
+the other UniverLab tools do, and version lines print no `v` prefix
+(`gitkit 0.0.1 → 0.6.0`). The background check (`GITKIT_NO_UPDATE_CHECK`) only
+prints a one-line notice pointing at `gitkit update` and never installs.
 
 ## Global flags
 

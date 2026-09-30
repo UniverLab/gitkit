@@ -8,29 +8,25 @@
 //! path, target triple) is injected through [`UpdateDeps`], so the unit tests
 //! in `tests.rs` run with zero network access.
 //!
-//! The background check in [`super::check_for_update`] is a separate, silent
-//! path: it has its own prompt and its own installer, it never receives the
-//! seams defined here, and it swallows every error — only this module's
-//! command is allowed to fail loudly on a network problem.
+//! Exit-code contract: `0` up to date / nothing installed / declined prompt,
+//! `1` update available in `--check` mode (or an archive with no `gitkit`
+//! binary), `2` the release lookup could not complete — network, DNS, TLS,
+//! an HTTP error, or an unparsable response — reported as one stderr line
+//! naming the cause. The background check in [`super::check_for_update`] is
+//! the separate, silent path: it swallows every error, while this command
+//! never hides one.
 
 use anyhow::{anyhow, bail, Context, Result};
 use serde::Deserialize;
 use std::path::{Path, PathBuf};
-use std::time::Duration;
 
+use super::http::{RealDownloader, RealFetcher};
 use super::GITHUB_REPO;
 
-/// Total request timeout for the release-list lookup. An explicit command
-/// must fail loudly, but it must never hang either.
-const RELEASE_TIMEOUT: Duration = Duration::from_secs(15);
-
-/// Total request timeout for the archive download. A release binary is a few
-/// MiB, so a slow link must not be mistaken for a dead one.
-const DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(120);
-
-/// The exact remediation printed when the running binary lives below
-/// `~/.cargo/bin`: cargo owns that file, so gitkit refuses to replace it.
-pub const CARGO_INSTALL_HINT: &str = "cargo install --force gitkit";
+/// The exact refusal printed when the running binary lives below
+/// `~/.cargo/bin`: cargo owns that file, so gitkit refuses to replace it
+/// and names the one command that still works.
+pub const CARGO_INSTALL_HINT: &str = "installed with cargo — run: cargo install --force gitkit";
 
 /// The release fields needed to select a stable, published binary.
 #[derive(Deserialize, Debug, Clone, PartialEq)]
@@ -47,53 +43,10 @@ pub trait ReleaseFetcher {
     fn get(&self, url: &str) -> Result<String>;
 }
 
-/// Production release lookup. All network and HTTP-status handling lives
-/// behind [`ReleaseFetcher`] so unit tests can use a deterministic fake.
-pub struct RealFetcher;
-
-impl ReleaseFetcher for RealFetcher {
-    fn get(&self, url: &str) -> Result<String> {
-        let response = ureq::get(url)
-            .timeout(RELEASE_TIMEOUT)
-            .set("User-Agent", "gitkit-update")
-            .call()
-            .map_err(|error| anyhow!("failed to fetch GitHub releases: {error}"))?;
-        if response.status() != 200 {
-            bail!("GitHub releases request failed: HTTP {}", response.status());
-        }
-        response
-            .into_string()
-            .context("failed to read GitHub releases response")
-    }
-}
-
 /// Injectable binary downloader. The archive is decoded only after this seam
 /// returns, keeping the updater tests entirely offline.
 pub trait BinaryDownloader {
     fn download(&self, url: &str) -> Result<Vec<u8>>;
-}
-
-/// Production binary downloader.
-pub struct RealDownloader;
-
-impl BinaryDownloader for RealDownloader {
-    fn download(&self, url: &str) -> Result<Vec<u8>> {
-        let response = ureq::get(url)
-            .timeout(DOWNLOAD_TIMEOUT)
-            .set("User-Agent", "gitkit-update")
-            .call()
-            .map_err(|error| anyhow!("failed to download {url}: {error}"))?;
-        if response.status() != 200 {
-            bail!("Download failed: HTTP {}", response.status());
-        }
-        use std::io::Read;
-        let mut bytes = Vec::new();
-        response
-            .into_reader()
-            .read_to_end(&mut bytes)
-            .context("failed to read update archive")?;
-        Ok(bytes)
-    }
 }
 
 /// Dependencies for the hermetic update command path. The real command uses
@@ -115,22 +68,28 @@ pub struct UpdateDeps<'a> {
 ///
 /// The returned integer is the process exit code: `0` means no update was
 /// installed (already current, a declined prompt, or a cargo-managed
-/// install) and `1` means an update was available in `--check` mode or the
-/// downloaded archive carried no `gitkit` binary. Network and API errors
-/// surface as `Err` — the explicit command fails loudly, unlike the silent
-/// background check.
+/// install), `1` means an update was available in `--check` mode (or the
+/// downloaded archive carried no `gitkit` binary), and `2` means the
+/// release lookup could not complete — network, DNS, TLS, an HTTP error,
+/// or an unparsable response — with the cause already printed to stderr as
+/// a single line, unlike the silent background check.
 pub fn run_update(check: bool, yes: bool) -> Result<i32> {
     let current = current_version();
-    let releases = fetch_releases_with(&RealFetcher)?;
+    // A failed lookup is not an `Err`: it is the "check could not complete"
+    // outcome, carried through `UpdateDeps` so `--check` and a plain update
+    // both exit 2 with one stderr line instead of anyhow's exit 1.
+    let releases = fetch_releases_with(&RealFetcher).map_err(|error| error.to_string());
 
     // The first pass is limited to the network result. The hermetic core
     // below owns all output and consent, so `--check` cannot touch a local
     // path, the target, or the prompt before it returns.
-    let latest = select_latest_stable(&releases, current);
-    if latest.is_none() || check {
+    let has_update = releases
+        .as_ref()
+        .is_ok_and(|list| select_latest_stable(list, current).is_some());
+    if !has_update || check {
         let deps = UpdateDeps {
             current,
-            releases: Ok(releases),
+            releases,
             exe: Path::new("/tmp/gitkit-update-test/gitkit"),
             cargo_bin: Path::new("/tmp/gitkit-update-test/not-cargo"),
             target: Ok("x86_64-unknown-linux-musl"),
@@ -143,7 +102,9 @@ pub fn run_update(check: bool, yes: bool) -> Result<i32> {
     // An actual install needs the executable and target facts. Resolve them
     // only after the read-only pass established that a newer release exists,
     // so `--check` keeps working on platforms without release assets.
-    let latest = latest.expect("newer release was established above");
+    let releases = releases.expect("a newer release implies a successful lookup");
+    let latest =
+        select_latest_stable(&releases, current).expect("a newer release was established above");
     let exe = std::env::current_exe().context("failed to locate gitkit executable")?;
     let cargo_bin = cargo_bin_dir();
     // Resolved eagerly but *carried* as a result: the hermetic core decides
@@ -158,7 +119,7 @@ pub fn run_update(check: bool, yes: bool) -> Result<i32> {
         target,
         downloader: &RealDownloader,
         confirm: &|| {
-            inquire::Confirm::new(&format!("Update to {latest}? [y/N]"))
+            inquire::Confirm::new(&format!("Update to {}? [y/N]", display_version(&latest)))
                 .with_default(false)
                 .prompt()
                 .unwrap_or(false)
@@ -175,15 +136,21 @@ pub fn run_update_with(check: bool, yes: bool, deps: &UpdateDeps<'_>) -> Result<
 }
 
 fn run_update_core(check: bool, yes: bool, deps: &UpdateDeps<'_>) -> Result<i32> {
-    let releases = deps
-        .releases
-        .as_ref()
-        .map_err(|error| anyhow!("release lookup failed: {error}"))?;
+    let releases = match deps.releases.as_ref() {
+        Ok(releases) => releases,
+        Err(cause) => {
+            // Contract: the check could not complete — one stderr line,
+            // exit 2. Applies to `--check` and a plain update alike, and
+            // nothing below (cargo guard, target, prompt, download) runs.
+            eprintln!("update check failed: {cause}");
+            return Ok(2);
+        }
+    };
     let Some(latest) = select_latest_stable(releases, deps.current) else {
         println!("gitkit {} is up to date", deps.current);
         return Ok(0);
     };
-    println!("gitkit {} → {latest}", deps.current);
+    println!("gitkit {} → {}", deps.current, display_version(&latest));
 
     // `--check` ends here: exit 1 = update available, 0 = already current.
     // Nothing below this line — cargo guard, target, prompt, download — may
@@ -214,7 +181,7 @@ fn run_update_core(check: bool, yes: bool, deps: &UpdateDeps<'_>) -> Result<i32>
     }
 
     replace_binary(&staged, deps.exe)?;
-    println!("✓ updated to {latest}");
+    println!("✓ updated to {}", display_version(&latest));
     Ok(0)
 }
 
@@ -222,6 +189,13 @@ fn run_update_core(check: bool, yes: bool, deps: &UpdateDeps<'_>) -> Result<i32>
 
 pub(super) fn current_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
+}
+
+/// User-facing version text. Release tags keep the leading `v` in URLs and
+/// asset names; every message drops it, so the contract reads
+/// `gitkit 0.0.1 → 0.6.0` with no prefix on either side.
+pub(super) fn display_version(tag: &str) -> &str {
+    tag.strip_prefix('v').unwrap_or(tag)
 }
 
 /// A tag is "stable" when it carries nothing but digits and dots after an
@@ -270,11 +244,14 @@ pub fn select_latest_stable(releases: &[GitHubRelease], current: &str) -> Option
 // ── Release lookup ──────────────────────────────────────────────
 
 /// Fetch the full release list (not `/releases/latest`) so draft, prerelease,
-/// and non-semver tags can be filtered in code, as the spec requires.
+/// and non-semver tags can be filtered in code, as the spec requires. The
+/// parse error is self-contained and single-line: it travels to the exit-2
+/// path as a `String`, so the cause must live in the top message.
 pub(super) fn fetch_releases_with(fetcher: &dyn ReleaseFetcher) -> Result<Vec<GitHubRelease>> {
     let url = format!("https://api.github.com/repos/{GITHUB_REPO}/releases");
     let body = fetcher.get(&url)?;
-    serde_json::from_str(&body).context("failed to parse releases JSON")
+    serde_json::from_str(&body)
+        .map_err(|error| anyhow!("unparsable GitHub releases response: {error}"))
 }
 
 // ── Target and installation-path helpers ────────────────────────

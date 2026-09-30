@@ -233,8 +233,16 @@ gitkit update [--check] [--yes]
 
 | Flag | Description |
 |---|---|
-| `--check` | Read-only: exit `1` when an update is available, `0` when current. Changes nothing. |
+| `--check` | Read-only: reports the result with the exit codes below and changes nothing. |
 | `--yes` | Skip the confirmation prompt and install immediately. |
+
+**Exit codes** (same for `gitkit update` and `gitkit update --check`):
+
+| Code | Meaning |
+|---|---|
+| `0` | Up to date, nothing to install, or the prompt was declined. |
+| `1` | An update is available (`--check` only), or the downloaded archive carried no `gitkit` binary. |
+| `2` | The update check could not complete — network, DNS, TLS, an HTTP error (≥ 400) or an unparsable response — reported as one stderr line naming the cause. |
 
 **What it does:**
 
@@ -246,10 +254,16 @@ gitkit update [--check] [--yes]
 - Swaps the binary atomically — a temporary file in the same directory, then a
   rename — so the replacement either happens completely or not at all.
 - Refuses to touch a cargo-managed install: it prints
-  `cargo install --force gitkit` instead of downloading anything.
-- Fails loudly (message plus non-zero exit) on network or API errors, unlike
-  the background check, which prints at most a one-line notice so it can never
-  interrupt your work.
+  `installed with cargo — run: cargo install --force gitkit` instead of
+  downloading anything.
+- Exits `2` with one stderr line naming the cause when the check cannot
+  complete (network, DNS, TLS, an HTTP error or an unparsable response),
+  unlike the background check, which prints at most a one-line notice so it
+  can never interrupt your work.
+- Honours `HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY` (upper and lower case)
+  exactly like the other UniverLab tools, so an update works behind a proxy.
+
+Version lines carry no `v` prefix: `gitkit 0.0.1 → 0.6.0`.
 
 `GITKIT_NO_UPDATE_CHECK` only disables the background check; `gitkit update`
 always does what you asked when you run it.
@@ -257,7 +271,7 @@ always does what you asked when you run it.
 **Examples:**
 
 ```bash
-# Just tell me whether something newer exists (exit 1 = update available)
+# Just tell me whether something newer exists (0 = current, 1 = update, 2 = check failed)
 gitkit update --check
 
 # Update to the latest stable release, asking before anything changes
