@@ -104,53 +104,61 @@ struct HookPlan {
 
 fn build_plan(include_data: bool) -> Result<UninstallPlan> {
     let reg = registry::load();
-    let mut repos = Vec::new();
 
-    for (key, entry) in &reg.repos {
-        let repo_path = PathBuf::from(&entry.path);
-        let exists = repo_path.exists();
-
-        let mut hook_plans = Vec::new();
-
-        if exists {
-            let git_dir = repo_path.join(".git");
-            if git_dir.exists() {
-                let hooks_dir = git_dir.join("hooks");
-                if hooks_dir.exists() {
-                    for hook_name in hooks::valid_hook_names() {
-                        let dispatcher_path = hooks_dir.join(hook_name);
-                        if !dispatcher_path.exists() {
-                            continue;
-                        }
-                        let content = fs::read_to_string(&dispatcher_path).unwrap_or_default();
-                        if !hooks::is_dispatcher(&content, hook_name) {
-                            continue;
-                        }
-
-                        let parts = hooks::list_parts(&hooks_dir, hook_name);
-                        let has_preexisting = parts.iter().any(|p| p == hooks::PRESERVED_PART_NAME);
-
-                        hook_plans.push(HookPlan {
-                            hook_name: hook_name.to_string(),
-                            has_dispatcher: true,
-                            parts,
-                            has_preexisting,
-                        });
-                    }
-                }
+    let repos = reg
+        .repos
+        .iter()
+        .map(|(key, entry)| {
+            let repo_path = PathBuf::from(&entry.path);
+            RepoPlan {
+                path: key.clone(),
+                exists: repo_path.exists(),
+                hooks: plan_hooks_for_repo(&repo_path),
             }
-        }
-
-        repos.push(RepoPlan {
-            path: key.clone(),
-            exists,
-            hooks: hook_plans,
-        });
-    }
+        })
+        .collect();
 
     Ok(UninstallPlan {
         repos,
         remove_local_data: include_data,
+    })
+}
+
+/// The hooks worth uninstalling in one registered repository: nothing when
+/// the repository or its `.git/hooks` directory is gone.
+fn plan_hooks_for_repo(repo_path: &Path) -> Vec<HookPlan> {
+    let hooks_dir = repo_path.join(".git").join("hooks");
+    if !hooks_dir.exists() {
+        return Vec::new();
+    }
+
+    hooks::valid_hook_names()
+        .iter()
+        .filter_map(|hook_name| plan_hook(&hooks_dir, hook_name))
+        .collect()
+}
+
+/// One hook of one registered repository, or `None` when there is nothing
+/// gitkit-owned to remove: no file, or a hook someone replaced by hand.
+fn plan_hook(hooks_dir: &Path, hook_name: &str) -> Option<HookPlan> {
+    let dispatcher_path = hooks_dir.join(hook_name);
+    if !dispatcher_path.exists() {
+        return None;
+    }
+
+    let content = fs::read_to_string(&dispatcher_path).unwrap_or_default();
+    if !hooks::is_dispatcher(&content, hook_name) {
+        return None;
+    }
+
+    let parts = hooks::list_parts(hooks_dir, hook_name);
+    let has_preexisting = parts.iter().any(|p| p == hooks::PRESERVED_PART_NAME);
+
+    Some(HookPlan {
+        hook_name: hook_name.to_string(),
+        has_dispatcher: true,
+        parts,
+        has_preexisting,
     })
 }
 
@@ -513,5 +521,67 @@ mod tests {
 
             assert!(!gitkit_dir.exists());
         });
+    }
+
+    // ── plan_hook / plan_hooks_for_repo ─────────────────────────────────────
+
+    #[test]
+    fn plan_hook_skips_missing_dispatcher_file() {
+        let dir = tempfile::TempDir::new().unwrap();
+        assert!(plan_hook(dir.path(), "pre-commit").is_none());
+    }
+
+    #[test]
+    fn plan_hook_skips_hook_replaced_by_hand() {
+        let dir = tempfile::TempDir::new().unwrap();
+        fs::write(dir.path().join("pre-commit"), "#!/bin/sh\nmine\n").unwrap();
+        assert!(plan_hook(dir.path(), "pre-commit").is_none());
+    }
+
+    #[test]
+    fn plan_hook_plans_dispatcher_with_parts() {
+        let dir = tempfile::TempDir::new().unwrap();
+        install_dispatcher(dir.path(), "pre-commit");
+        install_part(dir.path(), "pre-commit", "no-secrets", "#!/bin/sh\np\n");
+
+        let plan = plan_hook(dir.path(), "pre-commit").unwrap();
+        assert_eq!(plan.hook_name, "pre-commit");
+        assert!(plan.has_dispatcher);
+        assert_eq!(plan.parts, vec!["no-secrets".to_string()]);
+        assert!(!plan.has_preexisting);
+    }
+
+    #[test]
+    fn plan_hook_flags_preserved_preexisting_part() {
+        let dir = tempfile::TempDir::new().unwrap();
+        install_dispatcher(dir.path(), "pre-commit");
+        install_part(
+            dir.path(),
+            "pre-commit",
+            hooks::PRESERVED_PART_NAME,
+            "#!/bin/sh\nold\n",
+        );
+
+        let plan = plan_hook(dir.path(), "pre-commit").unwrap();
+        assert!(plan.has_preexisting);
+        assert_eq!(plan.parts, vec![hooks::PRESERVED_PART_NAME.to_string()]);
+    }
+
+    #[test]
+    fn plan_hooks_for_repo_empty_without_hooks_dir() {
+        let dir = tempfile::TempDir::new().unwrap();
+        assert!(plan_hooks_for_repo(dir.path()).is_empty());
+    }
+
+    #[test]
+    fn plan_hooks_for_repo_finds_installed_dispatcher() {
+        let dir = tempfile::TempDir::new().unwrap();
+        init_repo(dir.path());
+        let hooks_dir = dir.path().join(".git").join("hooks");
+        install_dispatcher(&hooks_dir, "pre-commit");
+
+        let plans = plan_hooks_for_repo(dir.path());
+        assert_eq!(plans.len(), 1);
+        assert_eq!(plans[0].hook_name, "pre-commit");
     }
 }

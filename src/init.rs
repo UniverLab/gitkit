@@ -29,26 +29,8 @@ pub fn run() -> Result<()> {
     println!("  Configure your git repo\n");
 
     // ── Build selection ─────────────────────────────────────────────────────
-    let saved_builds = builds::list_build_names();
-    if !saved_builds.is_empty() {
-        let mut options = vec!["Start fresh configuration".to_string()];
-        options.extend(saved_builds.iter().map(|b| format!("Use build: {b}")));
-
-        let choice = Select::new("Saved builds available", options)
-            .with_help_message("↑↓ move  enter confirm  esc start fresh")
-            .prompt_skippable()?;
-
-        if let Some(build_name) = choice
-            .as_deref()
-            .and_then(|c| c.strip_prefix("Use build: "))
-        {
-            println!();
-            let build = builds::load_build(build_name)?;
-            builds::apply_build(&build)?;
-            println!("\n  Done\n");
-            return Ok(());
-        }
-        println!();
+    if maybe_apply_saved_build()?.is_some() {
+        return Ok(());
     }
 
     let cargo_available = std::process::Command::new("cargo")
@@ -58,14 +40,107 @@ pub fn run() -> Result<()> {
         .unwrap_or(false);
 
     // ── Hooks ────────────────────────────────────────────────────────────────
-    let builtins = hooks::available_builtins();
     let installed_hooks = get_installed_hooks();
+    let hook_selections = prompt_hook_selections(&installed_hooks)?;
+
+    // ── .gitignore ───────────────────────────────────────────────────────────
+    let selected_templates = prompt_ignore_templates()?;
+
+    // ── .gitattributes ───────────────────────────────────────────────────────
+    let selected_attrs = prompt_attributes()?;
+
+    // ── Git config ───────────────────────────────────────────────────────────
+    let (selected_config_keys, configs_to_remove) = prompt_git_config(cargo_available)?;
+
+    let selections = InitSelections {
+        selected_builtins: hook_selections.selected_builtins,
+        custom_hooks: hook_selections.custom_hooks,
+        hooks_to_remove: hook_selections.hooks_to_remove,
+        selected_templates,
+        selected_attrs,
+        selected_config_keys,
+        configs_to_remove,
+        cargo_available,
+    };
+
+    // ── Summary & confirm ────────────────────────────────────────────────────
+    if !confirm_and_summarize(&selections)? {
+        return Ok(());
+    }
+
+    // ── Apply ────────────────────────────────────────────────────────────────
+    apply_selections(&selections)?;
+
+    // ── Save as build ─────────────────────────────────────────────────────
+    maybe_save_build()?;
+
+    println!("\n  Done\n");
+    Ok(())
+}
+
+/// Everything the wizard collects from the user before anything is applied,
+/// grouped so the confirm and apply steps can pass it around as one value.
+struct InitSelections {
+    selected_builtins: Vec<String>,
+    custom_hooks: Vec<(String, String)>,
+    hooks_to_remove: Vec<String>,
+    selected_templates: Vec<String>,
+    selected_attrs: Vec<String>,
+    selected_config_keys: Vec<String>,
+    configs_to_remove: Vec<String>,
+    cargo_available: bool,
+}
+
+/// Offers the saved-build picker before the wizard starts. `Ok(Some(()))`
+/// means a saved build was applied and `run()` must stop; `Ok(None)` means
+/// a fresh configuration follows.
+fn maybe_apply_saved_build() -> Result<Option<()>> {
+    let saved_builds = builds::list_build_names();
+    if saved_builds.is_empty() {
+        return Ok(None);
+    }
+
+    let mut options = vec!["Start fresh configuration".to_string()];
+    options.extend(saved_builds.iter().map(|b| format!("Use build: {b}")));
+
+    let choice = Select::new("Saved builds available", options)
+        .with_help_message("↑↓ move  enter confirm  esc start fresh")
+        .prompt_skippable()?;
+
+    let Some(build_name) = choice
+        .as_deref()
+        .and_then(|c| c.strip_prefix("Use build: "))
+    else {
+        println!();
+        return Ok(None);
+    };
+
+    println!();
+    let build = builds::load_build(build_name)?;
+    builds::apply_build(&build)?;
+    println!("\n  Done\n");
+    Ok(Some(()))
+}
+
+/// What the hooks step of the wizard resolved to: the builtins to install,
+/// the custom hooks to add, and the installed builtins to drop.
+struct HookSelections {
+    selected_builtins: Vec<String>,
+    custom_hooks: Vec<(String, String)>,
+    hooks_to_remove: Vec<String>,
+}
+
+/// Runs the hooks step of the wizard and resolves the answer into the
+/// builtins to install, the custom hooks to add, and the installed builtins
+/// to drop.
+fn prompt_hook_selections(installed: &HashSet<String>) -> Result<HookSelections> {
+    let builtins = hooks::available_builtins();
 
     let mut hook_items: Vec<String> = builtins
         .iter()
         .map(|b| {
             let base = format!("{:<25} ({})  —  {}", b.name, b.hook, b.description);
-            if installed_hooks.contains(b.name) {
+            if installed.contains(b.name) {
                 format!("{} [✓ installed]", base)
             } else {
                 base
@@ -77,7 +152,7 @@ pub fn run() -> Result<()> {
     let preselected: Vec<usize> = builtins
         .iter()
         .enumerate()
-        .filter(|(_, b)| installed_hooks.contains(b.name))
+        .filter(|(_, b)| installed.contains(b.name))
         .map(|(i, _)| i)
         .collect();
 
@@ -93,51 +168,94 @@ pub fn run() -> Result<()> {
         .prompt_skippable()?
         .unwrap_or_default();
 
-    let mut selected_builtins: Vec<&str> = Vec::new();
+    let mut selected_builtins: Vec<String> = Vec::new();
     let mut custom_hooks: Vec<(String, String)> = Vec::new();
 
     for item in &hook_selections {
-        if item == "Add custom hook..." {
-            let Some(hook_name) =
-                Select::new("Hook type", hooks::valid_hook_names().to_vec()).prompt_skippable()?
-            else {
-                continue;
-            };
-            let command = Text::new("  Command to run")
-                .prompt_skippable()?
-                .unwrap_or_default();
-            if command.trim().is_empty() {
-                continue;
-            }
-            custom_hooks.push((hook_name.to_string(), command));
-        } else if let Some(idx) = hook_items.iter().position(|i| i == item) {
-            if idx < builtins.len() {
-                selected_builtins.push(builtins[idx].name);
-            }
+        match parse_hook_item(item, &hook_items, builtins)? {
+            HookAction::Builtin(name) => selected_builtins.push(name),
+            HookAction::Custom(hook, command) => custom_hooks.push((hook, command)),
+            HookAction::Ignored => {}
         }
     }
 
-    let hooks_to_remove: Vec<&str> = installed_hooks
+    let hooks_to_remove: Vec<String> = installed
         .iter()
-        .filter(|h| !selected_builtins.contains(&h.as_str()))
-        .map(|s| s.as_str())
+        .filter(|h| !selected_builtins.contains(h))
+        .cloned()
         .collect();
 
-    // ── .gitignore ───────────────────────────────────────────────────────────
+    Ok(HookSelections {
+        selected_builtins,
+        custom_hooks,
+        hooks_to_remove,
+    })
+}
+
+/// What one selected entry of the hooks list resolves to.
+#[derive(Debug, PartialEq, Eq)]
+enum HookAction {
+    /// A builtin to install under its known name.
+    Builtin(String),
+    /// A custom hook: the git hook file to write and the command to run.
+    Custom(String, String),
+    /// Nothing to do — the user skipped the entry or left it blank.
+    Ignored,
+}
+
+/// Resolves one selected hooks-list item, prompting for the command when the
+/// "Add custom hook..." entry was picked. `Ignored` mirrors the wizard's
+/// skip semantics: a cancelled or blank answer changes nothing.
+fn parse_hook_item(
+    item: &str,
+    hook_items: &[String],
+    builtins: &[hooks::builtins::Builtin],
+) -> Result<HookAction> {
+    if item == "Add custom hook..." {
+        let Some(hook_name) =
+            Select::new("Hook type", hooks::valid_hook_names().to_vec()).prompt_skippable()?
+        else {
+            return Ok(HookAction::Ignored);
+        };
+        let command = Text::new("  Command to run")
+            .prompt_skippable()?
+            .unwrap_or_default();
+        if command.trim().is_empty() {
+            return Ok(HookAction::Ignored);
+        }
+        return Ok(HookAction::Custom(hook_name.to_string(), command));
+    }
+
+    let Some(idx) = hook_items.iter().position(|i| i == item) else {
+        return Ok(HookAction::Ignored);
+    };
+    if idx < builtins.len() {
+        return Ok(HookAction::Builtin(builtins[idx].name.to_string()));
+    }
+    Ok(HookAction::Ignored)
+}
+
+/// The `.gitignore` templates step. When the list can't be fetched
+/// (offline), says so and skips the step rather than failing the wizard.
+fn prompt_ignore_templates() -> Result<Vec<String>> {
     println!();
     let all_templates = load_ignore_templates();
-    let selected_templates = if all_templates.is_empty() {
+    if all_templates.is_empty() {
         println!("  ⚠  Could not fetch templates (offline?) — skipping .gitignore");
-        vec![]
-    } else {
-        MultiSelect::new(".gitignore templates", all_templates)
-            .with_help_message("Type to filter  ↑↓ move  space select  enter confirm  esc skip")
-            .with_page_size(10)
-            .prompt_skippable()?
-            .unwrap_or_default()
-    };
+        return Ok(Vec::new());
+    }
 
-    // ── .gitattributes ───────────────────────────────────────────────────────
+    let selected = MultiSelect::new(".gitignore templates", all_templates)
+        .with_help_message("Type to filter  ↑↓ move  space select  enter confirm  esc skip")
+        .with_page_size(10)
+        .prompt_skippable()?
+        .unwrap_or_default();
+    Ok(selected)
+}
+
+/// The `.gitattributes` step: both presets offered, line endings
+/// preselected; `esc`/skip leaves the selection empty.
+fn prompt_attributes() -> Result<Vec<String>> {
     println!();
     let attrs_items = vec![
         "line-endings  ★ recommended  —  * text=auto eol=lf",
@@ -151,9 +269,16 @@ pub fn run() -> Result<()> {
         .prompt_skippable()?
         .unwrap_or_default();
 
-    let selected_attrs: Vec<&str> = resolve_keys(&attrs_selections, &attrs_items, &attrs_keys);
+    let selected: Vec<String> = resolve_keys(&attrs_selections, &attrs_items, &attrs_keys)
+        .into_iter()
+        .map(str::to_string)
+        .collect();
+    Ok(selected)
+}
 
-    // ── Git config ───────────────────────────────────────────────────────────
+/// The git-config step: returns the keys to set (selected) and the keys to
+/// unset (configured but deselected).
+fn prompt_git_config(cargo_available: bool) -> Result<(Vec<String>, Vec<String>)> {
     println!();
     let configured_keys = get_configured_keys();
 
@@ -188,49 +313,61 @@ pub fn run() -> Result<()> {
         .prompt_skippable()?
         .unwrap_or_default();
 
-    let selected_config_keys: Vec<&str> = resolve_keys(
+    let selected_config_keys: Vec<String> = resolve_keys(
         &config_selections,
         &config_labels_refs,
         &config_options.iter().map(|o| o.key).collect::<Vec<_>>(),
-    );
+    )
+    .into_iter()
+    .map(str::to_string)
+    .collect();
 
-    let configs_to_remove: Vec<&str> = config_options
+    let configs_to_remove: Vec<String> = config_options
         .iter()
-        .filter(|o| configured_keys.contains(o.key) && !selected_config_keys.contains(&o.key))
-        .map(|o| o.key)
+        .filter(|o| {
+            configured_keys.contains(o.key) && !selected_config_keys.iter().any(|k| k == o.key)
+        })
+        .map(|o| o.key.to_string())
         .collect();
 
-    // ── Summary & confirm ────────────────────────────────────────────────────
-    let has_removals = !hooks_to_remove.is_empty() || !configs_to_remove.is_empty();
-    let nothing = selected_builtins.is_empty()
-        && custom_hooks.is_empty()
-        && selected_templates.is_empty()
-        && selected_attrs.is_empty()
-        && selected_config_keys.is_empty()
+    Ok((selected_config_keys, configs_to_remove))
+}
+
+/// Prints the selection summary and asks for final confirmation. Returns
+/// `false` when the wizard must stop without applying anything — nothing
+/// was selected, or the user declined.
+fn confirm_and_summarize(s: &InitSelections) -> Result<bool> {
+    let has_removals = !s.hooks_to_remove.is_empty() || !s.configs_to_remove.is_empty();
+    let nothing = s.selected_builtins.is_empty()
+        && s.custom_hooks.is_empty()
+        && s.selected_templates.is_empty()
+        && s.selected_attrs.is_empty()
+        && s.selected_config_keys.is_empty()
         && !has_removals;
 
     if nothing {
         println!("\n  Nothing selected — exiting.");
-        return Ok(());
+        return Ok(false);
     }
 
     println!("\n  Summary:");
-    if !selected_builtins.is_empty() || !custom_hooks.is_empty() {
-        let names: Vec<&str> = selected_builtins
+    if !s.selected_builtins.is_empty() || !s.custom_hooks.is_empty() {
+        let names: Vec<&str> = s
+            .selected_builtins
             .iter()
-            .copied()
-            .chain(custom_hooks.iter().map(|(h, _)| h.as_str()))
+            .map(String::as_str)
+            .chain(s.custom_hooks.iter().map(|(h, _)| h.as_str()))
             .collect();
         println!("  ◆ hooks: {}", names.join(", "));
     }
-    if !selected_templates.is_empty() {
-        println!("  ◆ .gitignore: {}", selected_templates.join(", "));
+    if !s.selected_templates.is_empty() {
+        println!("  ◆ .gitignore: {}", s.selected_templates.join(", "));
     }
-    if !selected_attrs.is_empty() {
-        println!("  ◆ .gitattributes: {}", selected_attrs.join(", "));
+    if !s.selected_attrs.is_empty() {
+        println!("  ◆ .gitattributes: {}", s.selected_attrs.join(", "));
     }
-    if !selected_config_keys.is_empty() {
-        println!("  ◆ git config: {}", selected_config_keys.join(", "));
+    if !s.selected_config_keys.is_empty() {
+        println!("  ◆ git config: {}", s.selected_config_keys.join(", "));
     }
 
     println!();
@@ -240,46 +377,48 @@ pub fn run() -> Result<()> {
 
     if !confirmed {
         println!("  Aborted.");
-        return Ok(());
+        return Ok(false);
     }
+    Ok(true)
+}
 
-    // ── Apply ────────────────────────────────────────────────────────────────
+/// Applies the confirmed selections, printing the original per-item
+/// progress lines.
+fn apply_selections(s: &InitSelections) -> Result<()> {
     println!();
-    for name in &selected_builtins {
+    for name in &s.selected_builtins {
         hooks::install_builtin(name, false)?;
         println!("  ◇ hook '{name}' installed  ✓");
     }
-    for (hook, cmd) in &custom_hooks {
+    for (hook, cmd) in &s.custom_hooks {
         hooks::install_custom(hook, cmd, false)?;
         println!("  ◇ hook '{hook}' installed  ✓");
     }
-    for hook in &hooks_to_remove {
+    for hook in &s.hooks_to_remove {
         // `remove_hook` now removes just this builtin's part, so composing
         // builtins that share a git hook (e.g. pre-commit) are unaffected.
         if hooks::remove_hook(hook, true).is_ok() {
             println!("  ◇ hook '{hook}' removed  ✓");
         }
     }
-    if !selected_templates.is_empty() {
-        let joined = selected_templates.join(",");
+    if !s.selected_templates.is_empty() {
+        let joined = s.selected_templates.join(",");
         ignore::add_templates(&joined, false)?;
         println!("  ◇ .gitignore updated  ✓");
     }
-    if !selected_attrs.is_empty() {
-        attributes::apply_presets(&selected_attrs)?;
+    if !s.selected_attrs.is_empty() {
+        let attrs: Vec<&str> = s.selected_attrs.iter().map(String::as_str).collect();
+        attributes::apply_presets(&attrs)?;
         println!("  ◇ .gitattributes applied  ✓");
     }
-    if !selected_config_keys.is_empty() {
-        config::apply_config_keys(
-            &selected_config_keys,
-            cargo_available,
-            config::ConfigScope::Local,
-        )?;
+    if !s.selected_config_keys.is_empty() {
+        let keys: Vec<&str> = s.selected_config_keys.iter().map(String::as_str).collect();
+        config::apply_config_keys(&keys, s.cargo_available, config::ConfigScope::Local)?;
         println!("  ◇ git config applied  ✓");
     }
     // Only touch the repo's local config; a global value affects every repo,
     // so it is never removed from here.
-    for key in &configs_to_remove {
+    for key in &s.configs_to_remove {
         if config::remove_config_key(key, config::ConfigScope::Local).is_ok() {
             println!("  ◇ git config '{key}' removed  ✓");
         } else {
@@ -289,7 +428,11 @@ pub fn run() -> Result<()> {
         }
     }
 
-    // ── Save as build ─────────────────────────────────────────────────────
+    Ok(())
+}
+
+/// Offers to save the applied configuration as a reusable build.
+fn maybe_save_build() -> Result<()> {
     println!();
     let save_build = inquire::Confirm::new("Save this configuration as a reusable build?")
         .with_default(false)
@@ -308,7 +451,6 @@ pub fn run() -> Result<()> {
         save_build_interactive(desc_ref)?;
     }
 
-    println!("\n  Done\n");
     Ok(())
 }
 
@@ -341,6 +483,18 @@ fn decide_save_retry(
     }
 }
 
+/// What the save-retry handler decided after a failed `builds::save`.
+#[derive(Debug, PartialEq, Eq)]
+enum SaveRetryAction {
+    /// The build now exists (fresh save or overwrite) — the loop stops.
+    Done,
+    /// Name collision with attempts left: try again with this name. `None`
+    /// means the name prompt was skipped — the loop finishes quietly.
+    RetryWith(Option<String>),
+    /// Not retryable, or attempts exhausted: report this reason and stop.
+    ReportUnsaved(String),
+}
+
 /// Runs the interactive name-prompt / retry loop for saving a build at the
 /// end of the wizard. Never leaves a failed save unreported: on any exit
 /// path other than success, it states plainly that the build was not saved.
@@ -360,47 +514,60 @@ fn save_build_interactive(desc_ref: Option<&str>) -> Result<()> {
             Ok(()) => return Ok(()),
             Err(e) => {
                 attempts += 1;
-                let is_collision = builds::is_build_name_collision(&e);
-                match decide_save_retry(is_collision, attempts, MAX_SAVE_ATTEMPTS) {
-                    SaveRetryDecision::Abort => {
-                        report_unsaved_build(&name, desc_ref, &e.to_string());
+                match handle_save_collision(&name, desc_ref, &e, attempts)? {
+                    SaveRetryAction::Done => return Ok(()),
+                    SaveRetryAction::RetryWith(next) => pending_name = next,
+                    SaveRetryAction::ReportUnsaved(reason) => {
+                        report_unsaved_build(&name, desc_ref, &reason);
                         return Ok(());
-                    }
-                    SaveRetryDecision::GiveUp => {
-                        report_unsaved_build(
-                            &name,
-                            desc_ref,
-                            &format!("gave up after {attempts} attempts: {e}"),
-                        );
-                        return Ok(());
-                    }
-                    SaveRetryDecision::Retry => {
-                        let overwrite_option = format!("Overwrite existing build '{name}'");
-                        let choice = Select::new(
-                            "  A build with that name already exists",
-                            vec![
-                                "Choose a different name".to_string(),
-                                overwrite_option.clone(),
-                            ],
-                        )
-                        .prompt_skippable()?;
-
-                        if choice.as_deref() == Some(overwrite_option.as_str()) {
-                            match builds::save_overwrite(&name, desc_ref) {
-                                Ok(()) => return Ok(()),
-                                Err(e) => {
-                                    report_unsaved_build(&name, desc_ref, &e.to_string());
-                                    return Ok(());
-                                }
-                            }
-                        } else {
-                            pending_name = Text::new("  Build name").prompt_skippable()?;
-                        }
                     }
                 }
             }
         }
     }
+}
+
+/// Maps one failed save onto the retry loop's next step: report it on a
+/// non-collision, give up once [`MAX_SAVE_ATTEMPTS`] is reached, and
+/// otherwise ask whether to overwrite or pick another name.
+fn handle_save_collision(
+    name: &str,
+    desc_ref: Option<&str>,
+    err: &anyhow::Error,
+    attempts: u32,
+) -> Result<SaveRetryAction> {
+    let is_collision = builds::is_build_name_collision(err);
+    match decide_save_retry(is_collision, attempts, MAX_SAVE_ATTEMPTS) {
+        SaveRetryDecision::Abort => Ok(SaveRetryAction::ReportUnsaved(err.to_string())),
+        SaveRetryDecision::GiveUp => Ok(SaveRetryAction::ReportUnsaved(format!(
+            "gave up after {attempts} attempts: {err}"
+        ))),
+        SaveRetryDecision::Retry => {
+            if !prompt_overwrite_or_rename(name)? {
+                let next = Text::new("  Build name").prompt_skippable()?;
+                return Ok(SaveRetryAction::RetryWith(next));
+            }
+            match builds::save_overwrite(name, desc_ref) {
+                Ok(()) => Ok(SaveRetryAction::Done),
+                Err(e) => Ok(SaveRetryAction::ReportUnsaved(e.to_string())),
+            }
+        }
+    }
+}
+
+/// Asks what to do about a name collision: overwrite the existing build, or
+/// choose a different name (`false`, also when the prompt is skipped).
+fn prompt_overwrite_or_rename(name: &str) -> Result<bool> {
+    let overwrite_option = format!("Overwrite existing build '{name}'");
+    let choice = Select::new(
+        "  A build with that name already exists",
+        vec![
+            "Choose a different name".to_string(),
+            overwrite_option.clone(),
+        ],
+    )
+    .prompt_skippable()?;
+    Ok(choice.as_deref() == Some(overwrite_option.as_str()))
 }
 
 /// The build the user asked for was not saved. Say so explicitly, and dump
@@ -906,5 +1073,108 @@ mod tests {
         if let Some(orig) = original {
             let _ = std::env::set_current_dir(orig);
         }
+    }
+
+    // ── parse_hook_item ─────────────────────────────────────────────────────
+
+    #[test]
+    fn parse_hook_item_resolves_builtin_label_to_its_name() {
+        let builtins = crate::hooks::available_builtins();
+        let items = vec![
+            builtins[0].name.to_string(),
+            "Add custom hook...".to_string(),
+        ];
+        let action = parse_hook_item(&items[0], &items, builtins).unwrap();
+        assert_eq!(action, HookAction::Builtin(builtins[0].name.to_string()));
+    }
+
+    #[test]
+    fn parse_hook_item_ignores_unknown_labels() {
+        let builtins = crate::hooks::available_builtins();
+        let items = vec![
+            "not an option".to_string(),
+            "Add custom hook...".to_string(),
+        ];
+        assert_eq!(
+            parse_hook_item("something else", &items, builtins).unwrap(),
+            HookAction::Ignored
+        );
+    }
+
+    #[test]
+    fn parse_hook_item_ignores_items_past_the_builtins() {
+        let builtins = crate::hooks::available_builtins();
+        let mut items: Vec<String> = builtins.iter().map(|b| b.name.to_string()).collect();
+        items.push("extra option".to_string());
+        assert_eq!(
+            parse_hook_item("extra option", &items, builtins).unwrap(),
+            HookAction::Ignored
+        );
+    }
+
+    // ── handle_save_collision ───────────────────────────────────────────────
+
+    fn collision_err() -> anyhow::Error {
+        builds::BuildNameCollision {
+            name: "existing".to_string(),
+        }
+        .into()
+    }
+
+    #[test]
+    fn handle_save_collision_reports_non_collision_without_prompting() {
+        let err = anyhow::anyhow!("disk full");
+        let action = handle_save_collision("name", None, &err, 1).unwrap();
+        assert_eq!(action, SaveRetryAction::ReportUnsaved(err.to_string()));
+    }
+
+    #[test]
+    fn handle_save_collision_gives_up_at_max_attempts() {
+        let err = collision_err();
+        let action = handle_save_collision("name", None, &err, MAX_SAVE_ATTEMPTS).unwrap();
+        assert_eq!(
+            action,
+            SaveRetryAction::ReportUnsaved(format!(
+                "gave up after {MAX_SAVE_ATTEMPTS} attempts: {err}"
+            ))
+        );
+    }
+
+    // ── prompt-builder contract (guards the inquire API the wizard uses) ────
+
+    #[test]
+    fn wizard_prompt_builders_construct() {
+        // The exact builder chains run() and its helpers use; a dependency
+        // bump that changes this API must fail here, not at prompt time.
+        let _saved_builds = Select::new(
+            "Saved builds available",
+            vec!["Start fresh configuration".to_string()],
+        )
+        .with_help_message("↑↓ move  enter confirm  esc start fresh");
+        let _hooks = MultiSelect::new("Hooks", vec!["item".to_string()])
+            .with_default(&[0usize])
+            .with_help_message("↑↓ move  space select  enter confirm  esc skip");
+        let _custom = Select::new("Hook type", crate::hooks::valid_hook_names().to_vec());
+        let _command = Text::new("  Command to run");
+        let _templates = MultiSelect::new(".gitignore templates", vec!["rust".to_string()])
+            .with_help_message("Type to filter  ↑↓ move  space select  enter confirm  esc skip")
+            .with_page_size(10);
+        let _attrs = MultiSelect::new(".gitattributes", vec!["line-endings".to_string()])
+            .with_default(&[0usize])
+            .with_help_message("space select  enter confirm  esc skip");
+        let _git_config = MultiSelect::new("Git config", vec!["label".to_string()])
+            .with_default(&[0usize])
+            .with_help_message("↑↓ move  space select  enter confirm  esc skip");
+        let _apply = inquire::Confirm::new("Apply these changes?").with_default(true);
+        let _save_build = inquire::Confirm::new("Save this configuration as a reusable build?")
+            .with_default(false);
+        let _name = Text::new("  Build name");
+        let _overwrite = Select::new(
+            "  A build with that name already exists",
+            vec![
+                "Choose a different name".to_string(),
+                "Overwrite existing build 'x'".to_string(),
+            ],
+        );
     }
 }

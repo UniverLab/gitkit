@@ -1,7 +1,10 @@
 use anyhow::{Context, Result};
 use clap::Subcommand;
 use serde::{Deserialize, Serialize};
-use std::{fs, path::PathBuf};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 #[derive(Subcommand)]
 pub enum BuildCommand {
@@ -324,80 +327,11 @@ pub(crate) fn save_overwrite(name: &str, description: Option<&str>) -> Result<()
 pub(crate) fn capture_current_config(name: &str, description: Option<&str>) -> Result<Build> {
     let root = crate::utils::find_repo_root()?;
 
-    let mut builtins = Vec::new();
-    let mut custom = Vec::new();
     let hooks_dir = root.join(".git").join("hooks");
-    if hooks_dir.exists() {
-        if let Ok(entries) = fs::read_dir(&hooks_dir) {
-            for entry in entries.filter_map(|e| e.ok()) {
-                let path = entry.path();
-                if !path.is_file() {
-                    continue;
-                }
-                let hook_name = entry.file_name().to_string_lossy().to_string();
-                if hook_name.ends_with(".bak") || hook_name.ends_with(".sample") {
-                    continue;
-                }
-                let content = fs::read_to_string(&path).unwrap_or_default();
-
-                let parts = crate::hooks::list_parts(&hooks_dir, &hook_name);
-                if crate::hooks::is_dispatcher(&content, &hook_name) || !parts.is_empty() {
-                    // Capture recognized parts even if the top-level file no
-                    // longer matches the dispatcher gitkit installed — a hand
-                    // replacement of the dispatcher must not hide builtins
-                    // still installed underneath it in gitkit.d/.
-                    for part_name in parts {
-                        if let Some(b) = crate::hooks::builtins::get(&part_name) {
-                            builtins.push(b.name.to_string());
-                        }
-                        // The preserved pre-existing hook (if any) is
-                        // intentionally not captured: builds only replay
-                        // gitkit-managed configuration.
-                    }
-                    continue;
-                }
-
-                if let Some(b) = crate::hooks::detect_builtin(&hook_name, &content) {
-                    builtins.push(b.name.to_string());
-                } else if crate::hooks::valid_hook_names().contains(&hook_name.as_str()) {
-                    if let Some(command) = extract_custom_command(&content) {
-                        custom.push(CustomHook {
-                            hook: hook_name,
-                            command,
-                        });
-                    }
-                }
-            }
-        }
-    }
-
-    let gitignore_path = root.join(".gitignore");
-    let templates = if gitignore_path.exists() {
-        let content = fs::read_to_string(&gitignore_path)?;
-        detect_gitignore_templates(&content)
-    } else {
-        Vec::new()
-    };
-
-    let gitattributes_path = root.join(".gitattributes");
-    let presets = if gitattributes_path.exists() {
-        let content = fs::read_to_string(&gitattributes_path)?;
-        detect_gitattributes_presets(&content)
-    } else {
-        Vec::new()
-    };
-
-    let mut config_keys = Vec::new();
-    for option in crate::config::CONFIG_OPTIONS {
-        if option.key == "core.pager" {
-            continue;
-        }
-        if let Some(expected) = option.value {
-            if crate::utils::git_config_get(option.key, "--local").as_deref() == Some(expected) {
-                config_keys.push(option.key.to_string());
-            }
-        }
-    }
+    let (builtins, custom) = capture_hooks_from_dir(&hooks_dir);
+    let templates = capture_gitignore_templates(&root)?;
+    let presets = capture_gitattributes_presets(&root)?;
+    let config_keys = capture_config_keys();
 
     Ok(Build {
         name: name.to_string(),
@@ -410,6 +344,123 @@ pub(crate) fn capture_current_config(name: &str, description: Option<&str>) -> R
             scope: "local".to_string(),
         },
     })
+}
+
+/// What a single `.git/hooks/` entry turns out to be for build capture.
+#[derive(Debug)]
+enum HookCapture {
+    /// The gitkit-managed builtin(s) installed under this entry.
+    Builtins(Vec<String>),
+    /// A hand-written hook on a known hook file, with its command recovered.
+    Custom(CustomHook),
+    /// Backups, samples, directories — nothing build-relevant.
+    Skip,
+}
+
+/// Walks the repo's hooks directory and sorts every entry into the builtins
+/// and custom hooks a build should replay.
+fn capture_hooks_from_dir(hooks_dir: &Path) -> (Vec<String>, Vec<CustomHook>) {
+    let mut builtins = Vec::new();
+    let mut custom = Vec::new();
+
+    if !hooks_dir.exists() {
+        return (builtins, custom);
+    }
+    let Ok(entries) = fs::read_dir(hooks_dir) else {
+        return (builtins, custom);
+    };
+
+    for entry in entries.filter_map(|e| e.ok()) {
+        match classify_hook_entry(hooks_dir, entry) {
+            HookCapture::Builtins(names) => builtins.extend(names),
+            HookCapture::Custom(hook) => custom.push(hook),
+            HookCapture::Skip => {}
+        }
+    }
+
+    (builtins, custom)
+}
+
+/// Classifies one hooks-dir entry: a dispatcher (or any entry with parts in
+/// `gitkit.d/`) yields the recognized parts underneath it, a recognized
+/// builtin yields itself, a known hook file with a recoverable command
+/// yields a custom hook; backups, samples and non-files are skipped.
+fn classify_hook_entry(hooks_dir: &Path, entry: fs::DirEntry) -> HookCapture {
+    let path = entry.path();
+    if !path.is_file() {
+        return HookCapture::Skip;
+    }
+    let hook_name = entry.file_name().to_string_lossy().to_string();
+    if hook_name.ends_with(".bak") || hook_name.ends_with(".sample") {
+        return HookCapture::Skip;
+    }
+    let content = fs::read_to_string(&path).unwrap_or_default();
+
+    let parts = crate::hooks::list_parts(hooks_dir, &hook_name);
+    if crate::hooks::is_dispatcher(&content, &hook_name) || !parts.is_empty() {
+        // Capture recognized parts even if the top-level file no longer
+        // matches the dispatcher gitkit installed — a hand replacement of
+        // the dispatcher must not hide builtins still installed underneath
+        // it in gitkit.d/. The preserved pre-existing hook (if any) is
+        // intentionally not captured: builds only replay gitkit-managed
+        // configuration.
+        let names = parts
+            .iter()
+            .filter_map(|part| crate::hooks::builtins::get(part))
+            .map(|b| b.name.to_string())
+            .collect();
+        return HookCapture::Builtins(names);
+    }
+
+    if let Some(b) = crate::hooks::detect_builtin(&hook_name, &content) {
+        return HookCapture::Builtins(vec![b.name.to_string()]);
+    }
+    if crate::hooks::valid_hook_names().contains(&hook_name.as_str()) {
+        if let Some(command) = extract_custom_command(&content) {
+            return HookCapture::Custom(CustomHook {
+                hook: hook_name,
+                command,
+            });
+        }
+    }
+    HookCapture::Skip
+}
+
+/// The templates detected in the repo's `.gitignore`, if it has one.
+fn capture_gitignore_templates(root: &Path) -> Result<Vec<String>> {
+    let gitignore_path = root.join(".gitignore");
+    if !gitignore_path.exists() {
+        return Ok(Vec::new());
+    }
+    let content = fs::read_to_string(&gitignore_path)?;
+    Ok(detect_gitignore_templates(&content))
+}
+
+/// The presets detected in the repo's `.gitattributes`, if it has one.
+fn capture_gitattributes_presets(root: &Path) -> Result<Vec<String>> {
+    let gitattributes_path = root.join(".gitattributes");
+    if !gitattributes_path.exists() {
+        return Ok(Vec::new());
+    }
+    let content = fs::read_to_string(&gitattributes_path)?;
+    Ok(detect_gitattributes_presets(&content))
+}
+
+/// The configured options already set to their expected value in the
+/// repository's local config (global config is never captured).
+fn capture_config_keys() -> Vec<String> {
+    let mut config_keys = Vec::new();
+    for option in crate::config::CONFIG_OPTIONS {
+        if option.key == "core.pager" {
+            continue;
+        }
+        if let Some(expected) = option.value {
+            if crate::utils::git_config_get(option.key, "--local").as_deref() == Some(expected) {
+                config_keys.push(option.key.to_string());
+            }
+        }
+    }
+    config_keys
 }
 
 /// Recovers the command from a custom hook script (shebang + `set -e` + command).
@@ -1264,6 +1315,97 @@ description = ""
             .contains(&"binary-files".to_string()));
         if let Some(orig) = original {
             let _ = std::env::set_current_dir(orig);
+        }
+    }
+
+    // ── classify_hook_entry ───────────────────────────────────────────────
+
+    fn read_hooks_dir_entry(dir: &Path, file_name: &str) -> fs::DirEntry {
+        fs::read_dir(dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .find(|e| e.file_name() == std::ffi::OsStr::new(file_name))
+            .unwrap()
+    }
+
+    #[test]
+    fn classify_hook_entry_skips_backup_and_sample_files() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::fs::write(dir.path().join("pre-push.bak"), "#!/bin/sh\nold\n").unwrap();
+        std::fs::write(dir.path().join("pre-commit.sample"), "#!/bin/sh\nsample\n").unwrap();
+        let entry = read_hooks_dir_entry(dir.path(), "pre-push.bak");
+        assert!(matches!(
+            classify_hook_entry(dir.path(), entry),
+            HookCapture::Skip
+        ));
+        let entry = read_hooks_dir_entry(dir.path(), "pre-commit.sample");
+        assert!(matches!(
+            classify_hook_entry(dir.path(), entry),
+            HookCapture::Skip
+        ));
+    }
+
+    #[test]
+    fn classify_hook_entry_skips_directories() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::fs::create_dir(dir.path().join("gitkit.d")).unwrap();
+        let entry = read_hooks_dir_entry(dir.path(), "gitkit.d");
+        assert!(matches!(
+            classify_hook_entry(dir.path(), entry),
+            HookCapture::Skip
+        ));
+    }
+
+    #[test]
+    fn classify_hook_entry_detects_builtin_content() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let builtin = crate::hooks::builtins::get("conventional-commits").unwrap();
+        std::fs::write(dir.path().join("commit-msg"), builtin.script).unwrap();
+        let entry = read_hooks_dir_entry(dir.path(), "commit-msg");
+        match classify_hook_entry(dir.path(), entry) {
+            HookCapture::Builtins(names) => {
+                assert_eq!(names, vec!["conventional-commits".to_string()]);
+            }
+            other => panic!("expected builtins, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn classify_hook_entry_recovers_custom_hook_command() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::fs::write(
+            dir.path().join("pre-push"),
+            "#!/bin/sh\nset -e\ncargo test\n",
+        )
+        .unwrap();
+        let entry = read_hooks_dir_entry(dir.path(), "pre-push");
+        match classify_hook_entry(dir.path(), entry) {
+            HookCapture::Custom(hook) => {
+                assert_eq!(hook.hook, "pre-push");
+                assert_eq!(hook.command, "cargo test");
+            }
+            other => panic!("expected a custom hook, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn classify_hook_entry_collects_parts_under_dispatcher() {
+        let dir = tempfile::TempDir::new().unwrap();
+        // The top-level file is not the dispatcher; the parts underneath it
+        // are what gets captured.
+        std::fs::write(dir.path().join("commit-msg"), "#!/bin/sh\nhand\n").unwrap();
+        let parts = dir
+            .path()
+            .join(crate::hooks::PARTS_DIR_NAME)
+            .join("commit-msg");
+        std::fs::create_dir_all(&parts).unwrap();
+        std::fs::write(parts.join("conventional-commits"), "#!/bin/sh\np\n").unwrap();
+        let entry = read_hooks_dir_entry(dir.path(), "commit-msg");
+        match classify_hook_entry(dir.path(), entry) {
+            HookCapture::Builtins(names) => {
+                assert_eq!(names, vec!["conventional-commits".to_string()]);
+            }
+            other => panic!("expected builtins, got {other:?}"),
         }
     }
 

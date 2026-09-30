@@ -33,4 +33,4 @@ tempfile = "3"
 serial_test = "3.5.0"
 
 [dependencies.inquire]
-version = "0.7"
+version = "0.9"
