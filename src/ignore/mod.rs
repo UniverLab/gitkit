@@ -152,6 +152,9 @@ fn list(filter: Option<&str>) -> Result<()> {
 
 /// Merge new gitignore content into existing file, skipping non-empty non-comment
 /// lines already present. Preserves existing content and appends only new entries.
+/// A new `<dir>/*` entry supersedes an existing `<dir>/` line: the wholesale
+/// form would keep excluding the directory itself, which blocks the `!` negations
+/// the `agentic` template relies on to keep instruction files committable.
 fn merge_gitignore(path: &std::path::Path, new_content: &str) -> String {
     let existing = if path.exists() {
         fs::read_to_string(path).unwrap_or_default()
@@ -159,7 +162,32 @@ fn merge_gitignore(path: &std::path::Path, new_content: &str) -> String {
         String::new()
     };
 
-    let existing_patterns: std::collections::HashSet<&str> = existing
+    let superseded: std::collections::HashSet<String> = new_content
+        .lines()
+        .filter(|l| !l.is_empty() && !l.starts_with('#') && !l.starts_with('!'))
+        .filter(|l| l.ends_with("/*"))
+        .map(|l| l.trim_end_matches('*').to_string())
+        .collect();
+
+    let filtered_existing: String = if superseded.is_empty() {
+        existing.clone()
+    } else {
+        let kept: Vec<&str> = existing
+            .lines()
+            .filter(|line| !superseded.contains(*line))
+            .collect();
+        if kept.len() == existing.lines().count() {
+            existing.clone()
+        } else if kept.is_empty() {
+            String::new()
+        } else {
+            let mut out = kept.join("\n");
+            out.push('\n');
+            out
+        }
+    };
+
+    let existing_patterns: std::collections::HashSet<&str> = filtered_existing
         .lines()
         .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .collect();
@@ -176,10 +204,10 @@ fn merge_gitignore(path: &std::path::Path, new_content: &str) -> String {
         });
 
     if to_append.trim().is_empty() {
-        return existing;
+        return filtered_existing;
     }
 
-    let mut result = existing;
+    let mut result = filtered_existing;
     if !result.ends_with('\n') && !result.is_empty() {
         result.push('\n');
     }
@@ -307,17 +335,57 @@ skills-lock.json\n";
         let new_content = builtins::get("agentic").unwrap();
         let merged = merge_gitignore(&path, &new_content);
 
-        // Lines shared verbatim between the old and new template must not be duplicated.
-        for pattern in [
-            ".kiro/",
-            ".cursor/",
-            ".windsurf/",
-            ".agents/",
-            "skills-lock.json",
+        // A new `<dir>/*` entry supersedes the old wholesale `<dir>/` line:
+        // keeping both would leave the directory itself excluded and block
+        // the template's `!` negations for instruction files.
+        for (old, new) in [
+            (".kiro/", ".kiro/*"),
+            (".cursor/", ".cursor/*"),
+            (".agents/", ".agents/*"),
+            (".continue/", ".continue/*"),
+            (".copilot/", ".copilot/*"),
+            (".claude/", ".claude/*"),
         ] {
+            assert_eq!(
+                merged.lines().filter(|l| *l == old).count(),
+                0,
+                "{old} must be replaced by {new} after merge"
+            );
+            assert_eq!(
+                merged.lines().filter(|l| *l == new).count(),
+                1,
+                "{new} missing after merge"
+            );
+        }
+        // Entries with no replacement in the new template stay untouched.
+        for pattern in [".windsurf/", ".zencoder/", "skills-lock.json"] {
             let count = merged.lines().filter(|l| *l == pattern).count();
             assert_eq!(count, 1, "pattern {pattern} duplicated after merge");
         }
+        // The upgraded file must keep instruction files committable.
+        for negation in ["!.cursor/rules/", "!.continue/rules/", "!.claude/CLAUDE.md"] {
+            assert!(
+                merged.lines().any(|l| l == negation),
+                "missing {negation} after merge"
+            );
+        }
+    }
+
+    #[test]
+    fn merge_gitignore_star_supersedes_wholesale_dir() {
+        let (_dir, path) = tmp_gitignore(".foo/\nkeep\n");
+        let merged = merge_gitignore(&path, ".foo/*\nkeep\n");
+        assert!(!merged.lines().any(|l| l == ".foo/"));
+        assert_eq!(merged.lines().filter(|l| *l == ".foo/*").count(), 1);
+        assert_eq!(merged.lines().filter(|l| *l == "keep").count(), 1);
+    }
+
+    #[test]
+    fn merge_gitignore_star_does_not_touch_unrelated_dirs() {
+        let (_dir, path) = tmp_gitignore(".bar/\n");
+        let merged = merge_gitignore(&path, ".foo/*\n");
+        assert!(merged.lines().any(|l| l == ".bar/"));
+        assert!(merged.lines().any(|l| l == ".foo/*"));
     }
 
     #[test]
