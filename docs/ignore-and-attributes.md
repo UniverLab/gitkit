@@ -21,6 +21,13 @@ gitkit ignore list python               # filter the list
 Existing patterns are merged, not overwritten — your manual entries
 survive.
 
+The `agentic` template is derived from canopy's platform registry
+(https://github.com/UniverLab/canopy-registry): `gitkit` fetches it with a
+24-hour cache in `~/.gitkit/agent-registry.toml` and falls back to a snapshot
+embedded at build time when offline. Every harness directory is ignored, but
+instruction files (`AGENTS.md`, `.cursor/rules/`, …) stay committable and
+`.github/` is never ignored.
+
 ## `.gitattributes`
 
 ```bash

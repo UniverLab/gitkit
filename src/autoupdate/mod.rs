@@ -19,6 +19,8 @@ mod http;
 mod tests;
 pub mod update;
 
+#[cfg(not(test))]
+pub(crate) use http::agent;
 pub use update::run_update;
 
 const GITHUB_REPO: &str = "UniverLab/gitkit";

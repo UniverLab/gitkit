@@ -71,7 +71,7 @@ impl BinaryDownloader for RealDownloader {
 /// `.try_proxy_from_env(false)` pins ureq's own env detection off in every
 /// feature set — with `--all-features` its default would otherwise ignore
 /// `NO_PROXY` — and [`proxy_value`] applies the environment instead.
-pub(super) fn agent(url: &str, timeout: Duration) -> Result<ureq::Agent> {
+pub(crate) fn agent(url: &str, timeout: Duration) -> Result<ureq::Agent> {
     let (scheme, host) = authority(url);
     let mut builder = ureq::AgentBuilder::new()
         .timeout(timeout)

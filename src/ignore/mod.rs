@@ -4,6 +4,9 @@ use std::fs;
 
 use crate::utils::find_repo_root;
 
+mod agent_registry;
+mod agentic;
+
 const API_BASE: &str = "https://www.toptal.com/developers/gitignore/api";
 
 #[derive(Subcommand)]
@@ -88,21 +91,20 @@ fn add(templates: &str, _yes: bool, force: bool, dry_run: bool) -> Result<()> {
 /// Split templates, resolve built-ins locally, fetch the rest from the API.
 /// Combines both into a single output.
 fn resolve_templates(templates: &str) -> Result<String> {
-    let mut builtin_parts: Vec<&str> = Vec::new();
+    let mut builtin_parts: Vec<String> = Vec::new();
     let mut api_templates: Vec<&str> = Vec::new();
 
     for t in templates.split(',').map(str::trim) {
-        if builtins::get(t).is_some() {
-            builtin_parts.push(t);
-        } else {
-            api_templates.push(t);
+        match builtins::get(t) {
+            Some(content) => builtin_parts.push(content),
+            None => api_templates.push(t),
         }
     }
 
     let mut output = String::new();
 
-    for name in &builtin_parts {
-        output.push_str(builtins::get(name).unwrap());
+    for part in &builtin_parts {
+        output.push_str(part);
     }
 
     if !api_templates.is_empty() {
@@ -256,12 +258,11 @@ mod tests {
     fn agentic_template_has_representative_entry_per_group() {
         let result = resolve_templates("agentic").unwrap();
         // AI coding agents: local directories with no known shared-content convention
-        assert!(result.contains(".kiro/"));
-        // Claude Code: narrowed to local state only, not the whole shared directory
-        assert!(result.contains(".claude/settings.local.json"));
+        assert!(result.contains(".kiro/*"));
+        // Claude Code: the whole shared directory is ignored, instruction file re-included
+        assert!(result.contains(".claude/*"));
+        assert!(result.contains("!.claude/CLAUDE.md"));
         assert!(!result.lines().any(|l| l.trim() == ".claude/"));
-        // Aider: local chat/input history and tag cache
-        assert!(result.contains(".aider.chat.history.md"));
         // Agent skill/tool lockfiles
         assert!(result.contains("skills-lock.json"));
     }
@@ -271,7 +272,7 @@ mod tests {
         let content = builtins::get("agentic").unwrap();
         for line in content.lines() {
             let pattern = line.trim();
-            if pattern.is_empty() || pattern.starts_with('#') {
+            if pattern.is_empty() || pattern.starts_with('#') || pattern.starts_with('!') {
                 continue;
             }
             assert_ne!(pattern, "CLAUDE.md", "template must not ignore CLAUDE.md");
@@ -304,7 +305,7 @@ mod tests {
 skills-lock.json\n";
         let (_dir, path) = tmp_gitignore(previous);
         let new_content = builtins::get("agentic").unwrap();
-        let merged = merge_gitignore(&path, new_content);
+        let merged = merge_gitignore(&path, &new_content);
 
         // Lines shared verbatim between the old and new template must not be duplicated.
         for pattern in [
@@ -322,8 +323,8 @@ skills-lock.json\n";
     #[test]
     fn merge_gitignore_agentic_reapply_does_not_duplicate_patterns() {
         let content = builtins::get("agentic").unwrap();
-        let (_dir, path) = tmp_gitignore(content);
-        let merged = merge_gitignore(&path, content);
+        let (_dir, path) = tmp_gitignore(&content);
+        let merged = merge_gitignore(&path, &content);
 
         for pattern in content
             .lines()
@@ -513,21 +514,21 @@ skills-lock.json\n";
     fn builtins_get_returns_same_static_str() {
         let a = builtins::get("agentic");
         let b = builtins::get("agentic");
-        assert!(std::ptr::eq(
-            a.unwrap() as *const str,
-            b.unwrap() as *const str
-        ));
+        assert_eq!(a, b);
     }
 
     #[test]
     fn builtins_get_agentic_content_has_expected_dirs() {
         let content = builtins::get("agentic").unwrap();
-        assert!(content.contains(".kiro/"));
-        assert!(content.contains(".cursor/"));
-        assert!(content.contains(".windsurf/"));
-        assert!(content.contains(".claude/settings.local.json"));
-        assert!(content.contains(".agents/"));
-        assert!(content.contains(".aider.chat.history.md"));
+        assert!(content.contains(".kiro/*"));
+        assert!(content.contains(".cursor/*"));
+        assert!(content.contains(".claude/*"));
+        assert!(content.contains("!.claude/CLAUDE.md"));
+        assert!(content.contains(".kilocode/*"));
+        assert!(content.contains("kilo.jsonc"));
+        assert!(content.contains(".opencode/*"));
+        assert!(content.contains("opencode.json"));
+        assert!(content.contains(".agents/*"));
         assert!(content.contains("skills-lock.json"));
     }
 
@@ -776,33 +777,10 @@ skills-lock.json\n";
 mod builtins {
     pub(super) const NAMES: &[&str] = &["agentic"];
 
-    pub(super) fn get(name: &str) -> Option<&'static str> {
+    pub(super) fn get(name: &str) -> Option<String> {
         match name {
-            "agentic" => Some(AGENTIC),
+            "agentic" => Some(super::agentic::current_content()),
             _ => None,
         }
     }
-
-    const AGENTIC: &str = "\n\
-# AI coding agents\n\
-.agents/\n\
-.continue/\n\
-.copilot/\n\
-.cursor/\n\
-.kilocode/\n\
-.kiro/\n\
-.qwen/\n\
-.windsurf/\n\
-.zencoder/\n\
-\n\
-# Claude Code local state (settings.json, agents/, commands/, skills/ are shared)\n\
-.claude/settings.local.json\n\
-\n\
-# Aider local history and cache\n\
-.aider.chat.history.md\n\
-.aider.input.history\n\
-.aider.tags.cache.v*/\n\
-\n\
-# Agent skill/tool lockfiles\n\
-skills-lock.json\n";
 }
