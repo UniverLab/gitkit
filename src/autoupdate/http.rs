@@ -397,47 +397,64 @@ mod tests {
     /// The spec's proxy test: with `HTTPS_PROXY` set, the real client must
     /// hand the request to that proxy — proved here by a loopback listener
     /// that dies before it can answer, so the fetch fails and the listener's
-    /// first line must be the CONNECT tunnel. Loopback only, no network.
+    /// first line must be the CONNECT tunnel. Loopback only, no network; a
+    /// 2 s client timeout and a 2 s channel wait bound the run even when a
+    /// mutant forces a proxy value that can never answer.
     #[serial]
     #[test]
     fn env_https_proxy_routes_the_real_client() {
         let _env = EnvGuard::cleared();
         let listener = TcpListener::bind("127.0.0.1:0").expect("loopback listener");
         let port = listener.local_addr().expect("listener address").port();
+        listener
+            .set_nonblocking(true)
+            .expect("nonblocking listener");
         let (tx, rx) = mpsc::channel();
+        // Bounded accept loop: the client may never connect (a proxy mutant
+        // routes it elsewhere), so the thread must exit on a deadline and
+        // the join below must always return — never hang the suite.
+        let deadline = std::time::Instant::now() + Duration::from_secs(3);
         let proxy_thread = std::thread::spawn(move || {
-            let Ok((mut stream, _)) = listener.accept() else {
-                return;
-            };
-            let _ = stream.set_read_timeout(Some(Duration::from_secs(5)));
-            let mut request = Vec::new();
-            let mut chunk = [0u8; 512];
-            while !request.windows(2).any(|pair| pair == b"\r\n") {
-                match stream.read(&mut chunk) {
-                    Ok(0) | Err(_) => break,
-                    Ok(read) => request.extend_from_slice(&chunk[..read]),
+            let mut first_line = String::new();
+            while std::time::Instant::now() < deadline {
+                let Ok((mut stream, _)) = listener.accept() else {
+                    std::thread::sleep(Duration::from_millis(10));
+                    continue;
+                };
+                let _ = stream.set_read_timeout(Some(Duration::from_secs(2)));
+                let mut request = Vec::new();
+                let mut chunk = [0u8; 512];
+                while !request.windows(2).any(|pair| pair == b"\r\n") {
+                    match stream.read(&mut chunk) {
+                        Ok(0) | Err(_) => break,
+                        Ok(read) => request.extend_from_slice(&chunk[..read]),
+                    }
                 }
+                first_line = String::from_utf8_lossy(&request)
+                    .lines()
+                    .next()
+                    .unwrap_or_default()
+                    .to_string();
+                break;
+                // Dropping the stream closes the connection: the fetch must fail.
             }
-            let first_line = String::from_utf8_lossy(&request)
-                .lines()
-                .next()
-                .unwrap_or_default()
-                .to_string();
             let _ = tx.send(first_line);
-            // Dropping the stream closes the connection: the fetch must fail.
         });
 
         _env.set("HTTPS_PROXY", &format!("http://127.0.0.1:{port}"));
-        let error = RealFetcher
-            .get("https://api.github.com/repos/UniverLab/gitkit/releases")
-            .expect_err("the fake proxy cannot complete a GitHub request");
+        let url = "https://nonexistent.invalid/releases";
+        let error = agent(url, Duration::from_secs(2))
+            .expect("agent")
+            .get(url)
+            .call()
+            .expect_err("the fake proxy cannot complete the request");
         assert!(!error.to_string().is_empty(), "the cause must be named");
 
         let line = rx
-            .recv_timeout(Duration::from_secs(5))
+            .recv_timeout(Duration::from_secs(2))
             .expect("the env proxy must receive the request");
         assert!(
-            line.starts_with("CONNECT api.github.com:443"),
+            line.starts_with("CONNECT nonexistent.invalid:443"),
             "unexpected proxy request: {line}"
         );
         proxy_thread.join().expect("proxy thread");
@@ -460,11 +477,14 @@ mod tests {
         _env.set("HTTPS_PROXY", &format!("http://127.0.0.1:{port}"));
         _env.set("NO_PROXY", "invalid");
 
-        let error = RealFetcher
-            .get("https://nonexistent.invalid/releases")
+        let url = "https://nonexistent.invalid/releases";
+        let error = agent(url, Duration::from_secs(2))
+            .expect("agent")
+            .get(url)
+            .call()
             .expect_err("RFC 2606 .invalid names never resolve");
         assert!(
-            error.to_string().contains("DNS lookup failed"),
+            describe(&error).contains("DNS lookup failed"),
             "unexpected error: {error}"
         );
 
@@ -481,19 +501,30 @@ mod tests {
         let _env = EnvGuard::cleared();
 
         // A live 404: `Error::Status` cannot be built without a response.
+        // Bounded accept loop (nonblocking + deadline): the client may never
+        // connect under a proxy mutant, so the thread must exit on its own
+        // and the join below must always return — never hang the suite.
         let responder = TcpListener::bind("127.0.0.1:0").expect("loopback listener");
+        responder
+            .set_nonblocking(true)
+            .expect("nonblocking listener");
         let port = responder.local_addr().expect("listener address").port();
         let writer = std::thread::spawn(move || {
-            let Ok((mut stream, _)) = responder.accept() else {
-                return;
-            };
-            let _ = std::io::Write::write_all(
-                &mut stream,
-                b"HTTP/1.1 404 Not Found\r\ncontent-length: 0\r\n\r\n",
-            );
+            let deadline = std::time::Instant::now() + Duration::from_secs(3);
+            while std::time::Instant::now() < deadline {
+                let Ok((mut stream, _)) = responder.accept() else {
+                    std::thread::sleep(Duration::from_millis(10));
+                    continue;
+                };
+                let _ = std::io::Write::write_all(
+                    &mut stream,
+                    b"HTTP/1.1 404 Not Found\r\ncontent-length: 0\r\n\r\n",
+                );
+                break;
+            }
         });
         let url = format!("http://127.0.0.1:{port}/x");
-        let error = agent(&url, Duration::from_secs(5))
+        let error = agent(&url, Duration::from_secs(2))
             .expect("agent")
             .get(&url)
             .call()
@@ -503,7 +534,7 @@ mod tests {
 
         // Refused connection → transport fallback, one non-empty line.
         let refused = "http://127.0.0.1:1/x";
-        let error = agent(refused, Duration::from_secs(5))
+        let error = agent(refused, Duration::from_secs(2))
             .expect("agent")
             .get(refused)
             .call()
@@ -514,7 +545,7 @@ mod tests {
 
         // DNS failure names itself.
         let unreachable = "http://nonexistent.invalid/x";
-        let error = agent(unreachable, Duration::from_secs(10))
+        let error = agent(unreachable, Duration::from_secs(2))
             .expect("agent")
             .get(unreachable)
             .call()
@@ -523,5 +554,42 @@ mod tests {
             describe(&error).contains("DNS lookup failed"),
             "unexpected: {error}"
         );
+    }
+
+    #[serial]
+    #[test]
+    fn describe_names_too_many_redirects() {
+        let _env = EnvGuard::cleared();
+        let listener = TcpListener::bind("127.0.0.1:0").expect("loopback listener");
+        let port = listener.local_addr().expect("listener address").port();
+        listener
+            .set_nonblocking(true)
+            .expect("nonblocking listener");
+        // Every request is answered with a redirect to itself, so the client
+        // gives up with `TooManyRedirects`. The accept loop is bounded by a
+        // deadline and the thread is detached: nothing here can hang the run.
+        let deadline = std::time::Instant::now() + Duration::from_secs(2);
+        std::thread::spawn(move || {
+            while std::time::Instant::now() < deadline {
+                let Ok((mut stream, _)) = listener.accept() else {
+                    std::thread::sleep(Duration::from_millis(10));
+                    continue;
+                };
+                let _ = stream.set_read_timeout(Some(Duration::from_secs(1)));
+                let mut buf = [0u8; 1024];
+                let _ = stream.read(&mut buf);
+                let _ = std::io::Write::write_all(
+                    &mut stream,
+                    b"HTTP/1.1 302 Found\r\nlocation: /loop\r\ncontent-length: 0\r\n\r\n",
+                );
+            }
+        });
+        let url = format!("http://127.0.0.1:{port}/loop");
+        let error = agent(&url, Duration::from_secs(2))
+            .expect("agent")
+            .get(&url)
+            .call()
+            .expect_err("the redirect loop never resolves");
+        assert_eq!(describe(&error), "too many redirects");
     }
 }

@@ -2028,4 +2028,18 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn migrate_builtin_part_does_not_rewrite_an_up_to_date_part() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let parts = dir.path().join("parts");
+        std::fs::create_dir_all(&parts).unwrap();
+        let builtin = builtins::get("conventional-commits").unwrap();
+        std::fs::write(parts.join("conventional-commits"), "STALE").unwrap();
+        migrate_builtin_part(&parts, builtin, builtin.script).unwrap();
+        assert_eq!(
+            std::fs::read_to_string(parts.join("conventional-commits")).unwrap(),
+            "STALE"
+        );
+    }
 }

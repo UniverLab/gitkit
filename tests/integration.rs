@@ -1708,3 +1708,22 @@ fn status_global_summarizes_gone_entries_in_one_line() {
         );
     }
 }
+
+/// `gitkit init` drives the interactive wizard, which cannot prompt without
+/// a TTY: with stdin closed it must exit non-zero, never silently succeed.
+#[test]
+fn cli_init_without_a_terminal_exits_nonzero() {
+    let dir = TempDir::new().unwrap();
+    let binary = gitkit_binary();
+    let output = std::process::Command::new(&binary)
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        .env("HOME", dir.path())
+        .args(["init"])
+        .current_dir(dir.path())
+        .output()
+        .expect("Failed to run gitkit");
+    assert!(
+        !output.status.success(),
+        "init without a terminal must fail, not silently succeed"
+    );
+}

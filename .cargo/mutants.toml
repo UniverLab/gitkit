@@ -1,0 +1,31 @@
+# cargo-mutants configuration for gitkit.
+# Every exclusion is an adapter that cannot be exercised offline: a terminal,
+# the real network, or the process entry point. No logic is excluded.
+
+# Floor on the auto-set test timeout (5x the ~11s baseline, i.e. 55s). This
+# suite is subprocess-heavy (git + spawned binaries), so on a loaded shared
+# runner a passing run can exceed 55s wall clock. A genuine hang still runs
+# forever and is still reported as TIMEOUT; this only stops slow-but-passing
+# runs from being misreported.
+minimum_test_timeout = 300
+
+# Not an exclusion. cargo-mutants derives its per-mutant test timeout from
+# `baseline x 5` (here ~10.9 s -> 55 s) and the acceptance command passes no
+# --timeout. On this shared 12-core runner, concurrent cargo-mutants jobs make
+# an otherwise-caught mutant's suite exceed 55 s and get mis-reported as a
+# TIMEOUT. A real hang is unbounded, so it is still caught at 10x.
+timeout_multiplier = 10
+
+exclude_re = [
+  # The production terminal adapter: calls inquire against the real TTY.
+  "InquirePrompter",
+  # Real network I/O seams (release lookup / archive download).
+  "RealFetcher",
+  "RealDownloader",
+  # The env-gated startup notice: fetches over the network before any
+  # subcommand runs; covered by integration tests, not unit tests.
+  "fetch_latest_tag",
+  "check_for_update",
+  # The process entry point itself.
+  "\\bmain\\b",
+]

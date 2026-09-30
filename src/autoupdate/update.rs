@@ -86,7 +86,7 @@ pub fn run_update(check: bool, yes: bool) -> Result<i32> {
     let has_update = releases
         .as_ref()
         .is_ok_and(|list| select_latest_stable(list, current).is_some());
-    if !has_update || check {
+    if defers_to_core(has_update, check) {
         let deps = UpdateDeps {
             current,
             releases,
@@ -126,6 +126,12 @@ pub fn run_update(check: bool, yes: bool) -> Result<i32> {
         },
     };
     run_update_with(false, yes, &deps)
+}
+
+/// Whether this invocation hands straight to the hermetic core: nothing to
+/// install, or `--check` is read-only. Pure, so both branches are unit-tested.
+pub(super) fn defers_to_core(has_update: bool, check: bool) -> bool {
+    !has_update || check
 }
 
 /// Hermetic update flow used by unit tests and embedders. It has no
@@ -287,18 +293,17 @@ pub fn cargo_bin_dir() -> PathBuf {
         .filter(|value| !value.is_empty())
         .map(|value| PathBuf::from(value).join("bin"))
         .unwrap_or_else(|| {
-            home_dir()
+            home_dir(&|name| std::env::var(name).ok())
                 .unwrap_or_else(|| PathBuf::from("."))
                 .join(".cargo")
                 .join("bin")
         })
 }
 
-fn home_dir() -> Option<PathBuf> {
-    std::env::var_os("HOME")
-        .or_else(|| std::env::var_os("USERPROFILE"))
-        .filter(|value| !value.is_empty())
-        .map(PathBuf::from)
+pub(super) fn home_dir(lookup: &dyn Fn(&str) -> Option<String>) -> Option<PathBuf> {
+    let home = lookup("HOME").filter(|value| !value.is_empty());
+    let profile = lookup("USERPROFILE").filter(|value| !value.is_empty());
+    home.or(profile).map(PathBuf::from)
 }
 
 /// Test whether an executable lives below the cargo bin directory. Both

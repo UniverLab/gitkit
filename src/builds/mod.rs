@@ -1851,4 +1851,52 @@ description = ""
     fn build_path_with_special_chars() {
         assert!(build_path("my-build_v2.0").is_ok());
     }
+
+    // ── mutation guards: classify_hook_entry / capture_config_keys ──────
+
+    #[test]
+    fn classify_hook_entry_skips_a_sample_file_that_is_otherwise_recognizable() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let hooks_dir = dir.path();
+        // A sample file whose content matches the dispatcher and which has
+        // recognized parts underneath: only the `.sample` suffix keeps it a
+        // Skip — under `&&` it would fall through to Builtins.
+        std::fs::write(
+            hooks_dir.join("pre-commit.sample"),
+            crate::hooks::dispatcher_script("pre-commit.sample"),
+        )
+        .unwrap();
+        let parts = hooks_dir
+            .join(crate::hooks::PARTS_DIR_NAME)
+            .join("pre-commit.sample");
+        std::fs::create_dir_all(&parts).unwrap();
+        std::fs::write(parts.join("conventional-commits"), "#!/bin/sh\np\n").unwrap();
+        let entry = read_hooks_dir_entry(hooks_dir, "pre-commit.sample");
+        assert!(matches!(
+            classify_hook_entry(hooks_dir, entry),
+            HookCapture::Skip
+        ));
+    }
+
+    #[serial]
+    #[test]
+    fn capture_config_keys_returns_a_locally_set_option() {
+        let dir = tempfile::TempDir::new().unwrap();
+        std::process::Command::new("git")
+            .args(["init", "-q"])
+            .current_dir(dir.path())
+            .output()
+            .unwrap();
+        let original = std::env::current_dir().ok();
+        let _ = std::env::set_current_dir(dir.path());
+        std::process::Command::new("git")
+            .args(["config", "--local", "push.autoSetupRemote", "true"])
+            .output()
+            .unwrap();
+        let keys = capture_config_keys();
+        assert_eq!(keys, vec!["push.autoSetupRemote".to_string()]);
+        if let Some(orig) = original {
+            let _ = std::env::set_current_dir(orig);
+        }
+    }
 }

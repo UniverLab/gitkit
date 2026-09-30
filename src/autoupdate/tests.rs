@@ -725,19 +725,77 @@ fn check_exit_2_when_lookup_fails() {
 // ── Target resolution ───────────────────────────────────────────
 
 #[test]
-fn resolve_target_names_unsupported() {
+fn target_for_names_every_supported_platform() {
+    assert_eq!(
+        super::update::target_for("linux", "x86_64").unwrap(),
+        "x86_64-unknown-linux-musl"
+    );
+    assert_eq!(
+        super::update::target_for("macos", "aarch64").unwrap(),
+        "aarch64-apple-darwin"
+    );
+    assert_eq!(
+        super::update::target_for("macos", "x86_64").unwrap(),
+        "x86_64-apple-darwin"
+    );
     let error = super::update::target_for("windows", "x86_64").unwrap_err();
     assert!(error.to_string().contains("x86_64-windows"));
 }
 
 #[test]
-fn detect_platform_returns_valid_target() {
-    if (cfg!(target_os = "linux") || cfg!(target_os = "macos"))
-        && (cfg!(target_arch = "x86_64") || cfg!(target_arch = "aarch64"))
-    {
-        assert!(
-            super::update::resolve_target().is_ok(),
-            "should detect a supported release target"
-        );
-    }
+fn resolve_target_matches_target_for_the_host() {
+    assert_eq!(
+        super::update::resolve_target().ok(),
+        super::update::target_for(std::env::consts::OS, std::env::consts::ARCH).ok()
+    );
+}
+
+#[test]
+fn defers_to_core_table() {
+    assert!(super::update::defers_to_core(false, false));
+    assert!(!super::update::defers_to_core(true, false));
+    assert!(super::update::defers_to_core(false, true));
+    assert!(super::update::defers_to_core(true, true));
+}
+
+#[test]
+fn home_dir_from_pure_lookups() {
+    use std::path::PathBuf;
+    let empty = |_: &str| None;
+    assert_eq!(super::update::home_dir(&empty), None);
+
+    let home = |name: &str| {
+        [("HOME", "/x")]
+            .iter()
+            .find(|(key, _)| *key == name)
+            .map(|(_, value)| (*value).to_string())
+    };
+    assert_eq!(super::update::home_dir(&home), Some(PathBuf::from("/x")));
+
+    let fallback = |name: &str| {
+        [("HOME", ""), ("USERPROFILE", "/y")]
+            .iter()
+            .find(|(key, _)| *key == name)
+            .map(|(_, value)| (*value).to_string())
+    };
+    assert_eq!(
+        super::update::home_dir(&fallback),
+        Some(PathBuf::from("/y"))
+    );
+
+    let blank = |name: &str| {
+        [("HOME", "")]
+            .iter()
+            .find(|(key, _)| *key == name)
+            .map(|(_, value)| (*value).to_string())
+    };
+    assert_eq!(super::update::home_dir(&blank), None);
+
+    let blank_profile = |name: &str| {
+        [("USERPROFILE", "")]
+            .iter()
+            .find(|(key, _)| *key == name)
+            .map(|(_, value)| (*value).to_string())
+    };
+    assert_eq!(super::update::home_dir(&blank_profile), None);
 }
