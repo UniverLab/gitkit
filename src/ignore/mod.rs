@@ -388,6 +388,33 @@ skills-lock.json\n";
         assert!(merged.lines().any(|l| l == ".foo/*"));
     }
 
+    /// The superseded set only ever holds real ignore patterns: lines starting
+    /// with `#` are comments, so a `# dir/*` line in the new content must never
+    /// remove a `# dir/` line from the existing file.
+    #[test]
+    fn merge_gitignore_comment_star_never_supersedes_a_comment() {
+        let (_dir, path) = tmp_gitignore("# docs/\n");
+        let merged = merge_gitignore(&path, "# docs/*\n");
+        assert!(
+            merged.lines().any(|l| l == "# docs/"),
+            "a comment must not supersede an existing comment: {merged:?}"
+        );
+        assert!(merged.lines().any(|l| l == "# docs/*"));
+    }
+
+    /// Likewise a `!dir/*` negation line never supersedes an existing `!dir/`
+    /// line: only plain patterns enter the superseded set.
+    #[test]
+    fn merge_gitignore_negation_star_never_supersedes_a_negation() {
+        let (_dir, path) = tmp_gitignore("!docs/\n");
+        let merged = merge_gitignore(&path, "!docs/*\n");
+        assert!(
+            merged.lines().any(|l| l == "!docs/"),
+            "a negation must not supersede an existing negation: {merged:?}"
+        );
+        assert!(merged.lines().any(|l| l == "!docs/*"));
+    }
+
     #[test]
     fn merge_gitignore_agentic_reapply_does_not_duplicate_patterns() {
         let content = builtins::get("agentic").unwrap();

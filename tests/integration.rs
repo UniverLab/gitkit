@@ -471,6 +471,44 @@ fn cli_ignore_add_dry_run() {
     assert!(stdout.contains("[dry-run]"));
 }
 
+/// The `agentic` template goes through the production registry HTTP adapter.
+/// Behind a dead loopback proxy the fetch must fail and the fallback notice
+/// must name that real failure — never a fabricated body — while the command
+/// still renders the embedded snapshot. Loopback only, so it is deterministic
+/// offline and online alike.
+#[test]
+fn cli_ignore_add_agentic_behind_dead_proxy_names_the_fetch_failure() {
+    let dir = TempDir::new().unwrap();
+    std::fs::create_dir(dir.path().join(".git")).unwrap();
+    let binary = gitkit_binary();
+    let output = Command::new(&binary)
+        // Never let a test hit the network via the update check.
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        // A fresh HOME/GITKIT_HOME: no cached registry may short-circuit the fetch.
+        .env("HOME", dir.path())
+        .env("GITKIT_HOME", dir.path())
+        // Loopback-only dead proxy: the fetch fails with a refused connection.
+        .env("HTTPS_PROXY", "http://127.0.0.1:9")
+        .env("HTTP_PROXY", "http://127.0.0.1:9")
+        .env("NO_PROXY", "")
+        .args(["ignore", "add", "--yes", "--dry-run", "agentic"])
+        .current_dir(dir.path())
+        .output()
+        .expect("Failed to run gitkit");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "stderr: {stderr}");
+    assert!(stdout.contains("[dry-run]"), "stdout: {stdout}");
+    assert!(
+        stderr.contains("canopy registry fetch failed (Failed to fetch agent registry"),
+        "the notice must name the real fetch failure, not a fabricated body: {stderr}"
+    );
+    assert!(
+        stderr.contains("using the embedded registry snapshot"),
+        "the embedded snapshot fallback must still engage: {stderr}"
+    );
+}
+
 #[test]
 fn cli_attributes_init_dry_run() {
     let dir = TempDir::new().unwrap();

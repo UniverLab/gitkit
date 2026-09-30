@@ -344,6 +344,19 @@ mod tests {
         assert!(read_fresh_cache(&path, now_epoch()).is_none());
     }
 
+    /// The TTL is a full day: an entry half a day old is still fresh. This
+    /// pins the window itself (24 * 3600), not just its two ends — the fresh/
+    /// stale pair above would accept a much shorter TTL too.
+    #[test]
+    fn read_fresh_cache_accepts_half_day_old_entry() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let path = cached_registry(&dir, 12 * 3600);
+        assert!(
+            read_fresh_cache(&path, now_epoch()).is_some(),
+            "12h is inside the {CACHE_TTL_SECS}s TTL"
+        );
+    }
+
     #[test]
     fn read_fresh_cache_rejects_future_timestamp() {
         let dir = tempfile::TempDir::new().unwrap();
