@@ -53,8 +53,9 @@ action = "keypress"
 key = "enter"
 
 [[timeline]]
-action = "wait_for_quiet"
-quiet_ms = 1500
+action = "wait_for_screen"
+match = "Add custom hook"
+timeout_ms = 60000
 
 [[timeline]]
 action = "keypress"

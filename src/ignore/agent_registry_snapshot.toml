@@ -1,0 +1,112 @@
+# Merged canopy platform registry snapshot for the gitkit `agentic` template.
+# Source: https://raw.githubusercontent.com/UniverLab/canopy-registry/main (index.toml + platforms/<name>.toml).
+# Do not edit by hand. Regenerate with: scripts/regen-agent-registry.sh
+# Only name, project_paths, instruction_file and instruction_precedence are kept.
+fetched_at = 1790808232
+
+[[platforms]]
+name = "kiro"
+instruction_file = "AGENTS.md"
+project_paths = [".kiro/"]
+
+[[platforms]]
+name = "opencode"
+instruction_file = "AGENTS.md"
+project_paths = [".opencode/", "opencode.json", "opencode.jsonc"]
+
+[[platforms]]
+name = "copilot"
+instruction_file = ".github/copilot-instructions.md"
+project_paths = [".copilot/"]
+
+[[platforms]]
+name = "gemini"
+instruction_file = "GEMINI.md"
+project_paths = [".gemini/"]
+
+[[platforms]]
+name = "claude"
+instruction_file = "AGENTS.md"
+project_paths = [".claude/", ".mcp.json", "CLAUDE.local.md"]
+instruction_precedence = ["CLAUDE.md", ".claude/CLAUDE.md", "CLAUDE.local.md"]
+
+[[platforms]]
+name = "codex"
+instruction_file = "AGENTS.md"
+project_paths = [".codex/"]
+instruction_precedence = ["AGENTS.override.md"]
+
+[[platforms]]
+name = "mistral"
+instruction_file = "AGENTS.md"
+project_paths = [".vibe/"]
+
+[[platforms]]
+name = "blackbox"
+instruction_file = "AGENTS.md"
+project_paths = [".blackboxcli/"]
+
+[[platforms]]
+name = "cursor"
+instruction_file = ".cursor/rules"
+project_paths = [".cursor/", ".cursorignore", ".cursorindexingignore"]
+
+[[platforms]]
+name = "kilo"
+instruction_file = "AGENTS.md"
+project_paths = [".kilo/", ".kilocode/", "kilo.json", "kilo.jsonc"]
+
+[[platforms]]
+name = "cline"
+instruction_file = ".clinerules"
+project_paths = [".cline/", ".clineignore"]
+
+[[platforms]]
+name = "qwen"
+instruction_file = "AGENTS.md"
+project_paths = [".qwen/"]
+
+[[platforms]]
+name = "continue"
+instruction_file = ".continue/rules"
+project_paths = [".continue/"]
+
+[[platforms]]
+name = "antigravity"
+instruction_file = "GEMINI.md"
+project_paths = [".agents/"]
+
+[[platforms]]
+name = "mimocode"
+instruction_file = "AGENTS.md"
+project_paths = [".mimocode/", "mimocode.json", "mimocode.jsonc"]
+
+[[platforms]]
+name = "qoder"
+instruction_file = "AGENTS.md"
+project_paths = [".qoder/"]
+
+[[platforms]]
+name = "devin"
+instruction_file = "AGENTS.md"
+project_paths = [".devin/"]
+
+[[platforms]]
+name = "codebuddy"
+instruction_file = "AGENTS.md"
+project_paths = [".codebuddy/"]
+
+[[platforms]]
+name = "commandcode"
+instruction_file = "AGENTS.md"
+project_paths = [".commandcode/"]
+
+[[platforms]]
+name = "freebuff"
+instruction_file = "knowledge.md"
+project_paths = [".agents/"]
+
+[[platforms]]
+name = "utim"
+instruction_file = "AGENTS.md"
+project_paths = [".utim/", ".utim_tmp/"]

@@ -43,7 +43,7 @@ Set up a git repo the way you actually work — one guided flow for hooks, `.git
 - **⚙️ Curated git config** — Apply practical presets with `--global` or `--local` scope, with idempotency detection.
 - **💾 Save & reuse builds** — Save configurations and apply them to any project with one command.
 - **🔒 Repository locks** — Block commits and pushes during agent sessions with `gitkit lock` / `gitkit unlock` — useful when autonomous agents are editing the repo.
-- **⬆️ Version check & self-update** — Automatic check for new releases with optional auto-update; disable with `GITKIT_NO_UPDATE_CHECK`.
+- **⬆️ Version check & update** — Every run checks GitHub and, when a newer release exists, prints a one-line notice (it never installs anything); `gitkit update` is the path that updates, and it always asks first. Disable the background check with `GITKIT_NO_UPDATE_CHECK`.
 - **📦 Single binary** — No Node.js, no Python, no extra runtime.
 
 ---
@@ -214,6 +214,69 @@ gitkit clone https://github.com/user/repo my-project
 ```
 
 The wizard runs automatically after cloning, allowing you to configure hooks, `.gitignore`, `.gitattributes`, and git config in one workflow.
+
+---
+
+## `gitkit update`
+
+Check GitHub for a newer stable release and, only if you confirm, replace the
+running binary in place. It never updates silently: the command always asks
+first, and the answer defaults to **No**.
+
+**Usage:**
+
+```bash
+gitkit update [--check] [--yes]
+```
+
+**Flags:**
+
+| Flag | Description |
+|---|---|
+| `--check` | Read-only: reports the result with the exit codes below and changes nothing. |
+| `--yes` | Skip the confirmation prompt and install immediately. |
+
+**Exit codes** (same for `gitkit update` and `gitkit update --check`):
+
+| Code | Meaning |
+|---|---|
+| `0` | Up to date, nothing to install, or the prompt was declined. |
+| `1` | An update is available (`--check` only), or the downloaded archive carried no `gitkit` binary. |
+| `2` | The update check could not complete — network, DNS, TLS, an HTTP error (≥ 400) or an unparsable response — reported as one stderr line naming the cause. |
+
+**What it does:**
+
+- Fetches the latest **stable** GitHub release — drafts, prereleases and
+  non-semver tags are ignored — and compares it to the running version.
+- Downloads the release asset for the current target triple (for example
+  `gitkit-v0.6.0-x86_64-unknown-linux-musl.tar.gz`) and verifies its SHA256
+  against the release's `SHA256SUMS.txt` whenever one ships.
+- Swaps the binary atomically — a temporary file in the same directory, then a
+  rename — so the replacement either happens completely or not at all.
+- Refuses to touch a cargo-managed install: it prints
+  `installed with cargo — run: cargo install --force gitkit` instead of
+  downloading anything.
+- Exits `2` with one stderr line naming the cause when the check cannot
+  complete (network, DNS, TLS, an HTTP error or an unparsable response),
+  unlike the background check, which prints at most a one-line notice so it
+  can never interrupt your work.
+- Honours `HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY` (upper and lower case)
+  exactly like the other UniverLab tools, so an update works behind a proxy.
+
+Version lines carry no `v` prefix: `gitkit 0.0.1 → 0.6.0`.
+
+`GITKIT_NO_UPDATE_CHECK` only disables the background check; `gitkit update`
+always does what you asked when you run it.
+
+**Examples:**
+
+```bash
+# Just tell me whether something newer exists (0 = current, 1 = update, 2 = check failed)
+gitkit update --check
+
+# Update to the latest stable release, asking before anything changes
+gitkit update
+```
 
 ---
 

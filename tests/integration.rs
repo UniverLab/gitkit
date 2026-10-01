@@ -109,6 +109,56 @@ fn cli_build_help() {
 }
 
 #[test]
+fn update_help_documents_exit_codes() {
+    let (success, output) = run_gitkit(&["update", "--help"]);
+    assert!(success, "gitkit update --help should succeed");
+    // clap wraps help lines, so compare against one flattened line.
+    let flat = output.split_whitespace().collect::<Vec<_>>().join(" ");
+    assert!(
+        flat.contains("0 = up to date or nothing installed"),
+        "exit 0 undocumented: {flat}"
+    );
+    assert!(
+        flat.contains("1 = update available"),
+        "exit 1 undocumented: {flat}"
+    );
+    assert!(
+        flat.contains("2 = the update check could not complete"),
+        "exit 2 undocumented: {flat}"
+    );
+    assert!(flat.contains("exit 0"), "--check help: {flat}");
+    assert!(flat.contains("exit 1"), "--check help: {flat}");
+    assert!(flat.contains("exit 2"), "--check help: {flat}");
+}
+
+/// The spec's guideline command: behind a dead proxy the check must fail —
+/// not hang, not pretend an update exists — with exit 2 and one stderr line
+/// naming the cause. Loopback only, so it is deterministic offline.
+#[test]
+fn update_check_through_dead_proxy_exits_2() {
+    let binary = gitkit_binary();
+    let output = Command::new(&binary)
+        // Never let a test hit the network via the update check.
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        .env("HTTPS_PROXY", "http://127.0.0.1:9")
+        .env("NO_PROXY", "")
+        .args(["update", "--check"])
+        .current_dir(env!("CARGO_MANIFEST_DIR"))
+        .output()
+        .expect("Failed to run gitkit");
+    let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+    assert_eq!(
+        output.status.code(),
+        Some(2),
+        "expected exit 2, stderr: {stderr}"
+    );
+    assert!(
+        stderr.starts_with("update check failed:"),
+        "unexpected stderr: {stderr}"
+    );
+}
+
+#[test]
 fn cli_status_outside_repo() {
     let dir = TempDir::new().unwrap();
     let binary = gitkit_binary();
@@ -419,6 +469,91 @@ fn cli_ignore_add_dry_run() {
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     assert!(stdout.contains("[dry-run]"));
+}
+
+/// The `agentic` template goes through the production registry HTTP adapter.
+/// Behind a dead loopback proxy the fetch must fail and the fallback notice
+/// must name that real failure — never a fabricated body — while the command
+/// still renders the embedded snapshot. Loopback only, so it is deterministic
+/// offline and online alike.
+#[test]
+fn cli_ignore_add_agentic_behind_dead_proxy_names_the_fetch_failure() {
+    let dir = TempDir::new().unwrap();
+    std::fs::create_dir(dir.path().join(".git")).unwrap();
+    let binary = gitkit_binary();
+    let output = Command::new(&binary)
+        // Never let a test hit the network via the update check.
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        // A fresh HOME/GITKIT_HOME: no cached registry may short-circuit the fetch.
+        .env("HOME", dir.path())
+        .env("GITKIT_HOME", dir.path())
+        // Loopback-only dead proxy: the fetch fails with a refused connection.
+        .env("HTTPS_PROXY", "http://127.0.0.1:9")
+        .env("HTTP_PROXY", "http://127.0.0.1:9")
+        .env("NO_PROXY", "")
+        .args(["ignore", "add", "--yes", "--dry-run", "agentic"])
+        .current_dir(dir.path())
+        .output()
+        .expect("Failed to run gitkit");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "stderr: {stderr}");
+    assert!(stdout.contains("[dry-run]"), "stdout: {stdout}");
+    assert!(
+        stderr.contains("canopy registry fetch failed (Failed to fetch agent registry"),
+        "the notice must name the real fetch failure, not a fabricated body: {stderr}"
+    );
+    assert!(
+        stderr.contains("using the embedded registry snapshot"),
+        "the embedded snapshot fallback must still engage: {stderr}"
+    );
+}
+
+/// `cache_path` is what ties the registry cache to `$GITKIT_HOME`. With a
+/// fresh cache on disk the fetch must be skipped entirely (so no failure
+/// notice) and the cached platform must drive the rendered template — both
+/// hold only when the cache location resolves to the real file.
+#[test]
+fn cli_ignore_add_agentic_fresh_cache_is_used_without_any_fetch() {
+    let dir = TempDir::new().unwrap();
+    std::fs::create_dir(dir.path().join(".git")).unwrap();
+    let fetched_at = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("system clock is before the unix epoch")
+        .as_secs() as i64;
+    std::fs::write(
+        dir.path().join("agent-registry.toml"),
+        format!(
+            "fetched_at = {fetched_at}\n\n[[platforms]]\nname = \"cached\"\nproject_paths = [\".cached-probe/\"]\n"
+        ),
+    )
+    .expect("cache file must be writable");
+    let binary = gitkit_binary();
+    let output = Command::new(&binary)
+        // Never let a test hit the network via the update check.
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        .env("HOME", dir.path())
+        .env("GITKIT_HOME", dir.path())
+        // Loopback-only dead proxy: were the cache missed, the fetch would
+        // fail and the notice plus the embedded snapshot would show up.
+        .env("HTTPS_PROXY", "http://127.0.0.1:9")
+        .env("HTTP_PROXY", "http://127.0.0.1:9")
+        .env("NO_PROXY", "")
+        .args(["ignore", "add", "--yes", "--dry-run", "agentic"])
+        .current_dir(dir.path())
+        .output()
+        .expect("Failed to run gitkit");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "stderr: {stderr}");
+    assert!(
+        stdout.contains(".cached-probe/*"),
+        "the fresh $GITKIT_HOME cache must drive the template: {stdout}"
+    );
+    assert!(
+        !stderr.contains("canopy registry fetch failed"),
+        "a fresh cache must short-circuit the network fetch: {stderr}"
+    );
 }
 
 #[test]
@@ -1657,4 +1792,23 @@ fn status_global_summarizes_gone_entries_in_one_line() {
             "stdout must NOT list individual gone entry {fake_path}, stdout was:\n{stdout}"
         );
     }
+}
+
+/// `gitkit init` drives the interactive wizard, which cannot prompt without
+/// a TTY: with stdin closed it must exit non-zero, never silently succeed.
+#[test]
+fn cli_init_without_a_terminal_exits_nonzero() {
+    let dir = TempDir::new().unwrap();
+    let binary = gitkit_binary();
+    let output = std::process::Command::new(&binary)
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        .env("HOME", dir.path())
+        .args(["init"])
+        .current_dir(dir.path())
+        .output()
+        .expect("Failed to run gitkit");
+    assert!(
+        !output.status.success(),
+        "init without a terminal must fail, not silently succeed"
+    );
 }

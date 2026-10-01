@@ -221,46 +221,73 @@ fn ensure_dispatcher(dir: &Path, hook_name: &str) -> Result<()> {
     let hook_path = dir.join(hook_name);
     let parts = parts_dir(dir, hook_name);
 
-    if hook_path.exists() {
+    if !hook_path.exists() {
+        fs::create_dir_all(&parts).context("Failed to create gitkit.d parts directory")?;
+    } else {
         let content = fs::read_to_string(&hook_path).unwrap_or_default();
         if !is_dispatcher(&content, hook_name) {
-            fs::create_dir_all(&parts).context("Failed to create gitkit.d parts directory")?;
-
-            if let Some(builtin) = detect_builtin(hook_name, &content) {
-                let migrated_path = parts.join(builtin.name);
-                let current_script = if builtin.name == "message-rules" {
-                    message_rules::generate_script()
-                } else {
-                    builtin.script.to_owned()
-                };
-                let is_outdated = content.trim() != current_script.trim();
-                if is_outdated {
-                    println!("Updating outdated builtin: {}", builtin.name);
-                }
-                if !migrated_path.exists() || is_outdated {
-                    fs::write(&migrated_path, &current_script).with_context(|| {
-                        format!("Failed to migrate builtin '{}' into gitkit.d", builtin.name)
-                    })?;
-                    set_executable(&migrated_path)?;
-                }
-            } else {
-                let migrated_path = parts.join(PRESERVED_PART_NAME);
-                if !migrated_path.exists() {
-                    fs::write(&migrated_path, &content).with_context(|| {
-                        format!("Failed to migrate existing '{hook_name}' hook into gitkit.d")
-                    })?;
-                    set_executable(&migrated_path)?;
-                }
-            }
+            migrate_existing_hook(&parts, hook_name, &content)?;
         }
-    } else {
-        fs::create_dir_all(&parts).context("Failed to create gitkit.d parts directory")?;
     }
 
     let script = dispatcher_script(hook_name);
     fs::write(&hook_path, &script)
         .with_context(|| format!("Failed to write dispatcher for hook '{hook_name}'"))?;
     set_executable(&hook_path)?;
+    Ok(())
+}
+
+/// Migrates a pre-existing hook file into `gitkit.d/<hook_name>/` before the
+/// dispatcher replaces it, creating the parts directory first: a known builtin
+/// (by marker or exact content match) is absorbed under its name, anything
+/// else is kept verbatim as the preserved hand-written part.
+fn migrate_existing_hook(parts: &Path, hook_name: &str, content: &str) -> Result<()> {
+    fs::create_dir_all(parts).context("Failed to create gitkit.d parts directory")?;
+
+    if let Some(builtin) = detect_builtin(hook_name, content) {
+        migrate_builtin_part(parts, builtin, content)
+    } else {
+        migrate_preserved_part(parts, hook_name, content)
+    }
+}
+
+/// Absorbs a recognized builtin: written with the **current** script — so an
+/// outdated builtin is replaced, not frozen as an untouchable hand-written
+/// hook — unless that exact part is already up to date.
+fn migrate_builtin_part(
+    parts: &Path,
+    builtin: &'static builtins::Builtin,
+    content: &str,
+) -> Result<()> {
+    let migrated_path = parts.join(builtin.name);
+    let current_script = if builtin.name == "message-rules" {
+        message_rules::generate_script()
+    } else {
+        builtin.script.to_owned()
+    };
+    let is_outdated = content.trim() != current_script.trim();
+    if is_outdated {
+        println!("Updating outdated builtin: {}", builtin.name);
+    }
+    if !migrated_path.exists() || is_outdated {
+        fs::write(&migrated_path, &current_script).with_context(|| {
+            format!("Failed to migrate builtin '{}' into gitkit.d", builtin.name)
+        })?;
+        set_executable(&migrated_path)?;
+    }
+    Ok(())
+}
+
+/// Absorbs a hand-written hook verbatim as the preserved part, leaving an
+/// already-preserved part untouched.
+fn migrate_preserved_part(parts: &Path, hook_name: &str, content: &str) -> Result<()> {
+    let migrated_path = parts.join(PRESERVED_PART_NAME);
+    if !migrated_path.exists() {
+        fs::write(&migrated_path, content).with_context(|| {
+            format!("Failed to migrate existing '{hook_name}' hook into gitkit.d")
+        })?;
+        set_executable(&migrated_path)?;
+    }
     Ok(())
 }
 
@@ -2000,5 +2027,19 @@ mod tests {
                 marker.unwrap()
             );
         }
+    }
+
+    #[test]
+    fn migrate_builtin_part_does_not_rewrite_an_up_to_date_part() {
+        let dir = tempfile::TempDir::new().unwrap();
+        let parts = dir.path().join("parts");
+        std::fs::create_dir_all(&parts).unwrap();
+        let builtin = builtins::get("conventional-commits").unwrap();
+        std::fs::write(parts.join("conventional-commits"), "STALE").unwrap();
+        migrate_builtin_part(&parts, builtin, builtin.script).unwrap();
+        assert_eq!(
+            std::fs::read_to_string(parts.join("conventional-commits")).unwrap(),
+            "STALE"
+        );
     }
 }
