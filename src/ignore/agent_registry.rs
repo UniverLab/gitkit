@@ -129,7 +129,10 @@ fn parse_platform(name: &str, text: &str) -> Result<Platform> {
     })
 }
 
-#[cfg(not(test))]
+/// Where the fetched registry is cached: `$GITKIT_HOME/agent-registry.toml`
+/// when that is set, else `~/.gitkit/…` (`%USERPROFILE%` on Windows). Always
+/// compiled — the production caller is `current_content`'s real branch, tests
+/// pin the location directly.
 pub(crate) fn cache_path() -> Option<PathBuf> {
     if let Ok(home) = std::env::var("GITKIT_HOME") {
         return Some(PathBuf::from(home).join(CACHE_NAME));
@@ -324,8 +327,27 @@ mod tests {
         assert_eq!(platforms[1].project_paths, vec!["bar.json"]);
     }
 
-    /// Every cache test above compares `now_epoch()` against itself, so all
-    /// of them keep passing if the clock helper collapses to a constant.
+    /// `cache_path` decides where a fetched registry lands; without it the
+    /// cache is never read back or written. A missing path or an empty one
+    /// (a `PathBuf` that names no file) both have to fail here.
+    #[test]
+    fn cache_path_resolves_to_the_registry_cache_file() {
+        if std::env::var_os("HOME").is_none() && std::env::var_os("USERPROFILE").is_none() {
+            // Nothing to resolve a home directory against in this
+            // environment; production falls back to no cache at all.
+            return;
+        }
+        let path = cache_path().expect("a home directory is set, so the cache path must resolve");
+        assert_eq!(
+            path.file_name().and_then(|name| name.to_str()),
+            Some(CACHE_NAME),
+            "the cache must be the {CACHE_NAME} file, got {}",
+            path.display()
+        );
+    }
+
+    /// Every cache-freshness test compares `now_epoch()` against itself, so
+    /// all of them keep passing if the clock helper collapses to a constant.
     /// This pins it to the real wall clock the TTL is measured against.
     #[test]
     fn now_epoch_is_within_a_minute_of_the_wall_clock() {
