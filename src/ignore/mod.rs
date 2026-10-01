@@ -735,6 +735,27 @@ skills-lock.json
         assert_eq!(merged, second, "repeated content must merge idempotently");
     }
 
+    /// Req 5(d): a managed header sitting directly under a pattern line gets
+    /// exactly one blank separator above the block — never none, never two —
+    /// and the pattern keeps its place at the head of the file.
+    #[test]
+    fn agentic_merge_keeps_one_blank_above_a_block_attached_to_a_pattern() {
+        let fixture = "target/\n# AI coding agents\n.old/\n\n*.log\n";
+        let (_dir, path) = tmp_gitignore(fixture);
+        let agentic = builtins::get("agentic").unwrap();
+        let merged = merge_gitignore(&path, &agentic);
+        let header = merged
+            .find(agentic::CANONICAL_HEADER)
+            .unwrap_or_else(|| panic!("canonical header missing: {merged:?}"));
+        let target = merged.find("target/").expect("head pattern missing");
+        assert!(target < header, "block must follow the head: {merged:?}");
+        let before = &merged[..header];
+        assert!(
+            before.ends_with("target/\n\n"),
+            "exactly one blank must separate the block from the line above: {merged:?}"
+        );
+    }
+
     /// Trap F: only the canonical header selects the managed path; a bare
     /// header in new content stays an ordinary comment for the generic merge.
     #[test]

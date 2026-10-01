@@ -629,6 +629,38 @@ mod tests {
         assert!(fresh.contains("!keep/a.md"));
     }
 
+    /// A run of blank lines above the first managed header collapses to one,
+    /// and the anchor reported to the caller is shifted by exactly the number
+    /// of dropped blanks so the block still lands right after them.
+    #[test]
+    fn strip_managed_counts_blank_runs_above_the_first_header() {
+        let stripped = strip_managed("a\n\n\n\n# AI coding agents\n.x/\n\nb\n");
+        assert_eq!(
+            stripped.first_idx,
+            Some(2),
+            "the anchor must shift by the two blanks dropped above it: {:?}",
+            stripped.outside
+        );
+        assert_eq!(stripped.outside, ["a", "", "b"]);
+        assert_eq!(stripped.collected, [".x/"]);
+    }
+
+    /// Every distinct user line carried out of an old block enters `kept`,
+    /// not just the first one, and repeats of an already-kept line are
+    /// deduplicated.
+    #[test]
+    fn compute_kept_keeps_every_distinct_line_once() {
+        let fresh = split_fresh(".foo/*\n");
+        let collected = vec![
+            ".a/".to_string(),
+            ".b/".to_string(),
+            ".a/".to_string(),
+            ".a/".to_string(),
+        ];
+        let kept = compute_kept(&collected, &fresh);
+        assert_eq!(kept, [".a/", ".b/"]);
+    }
+
     /// An input that opens with a negation still gets the marker, once, and
     /// never an ignore line after it.
     #[test]
