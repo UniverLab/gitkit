@@ -71,10 +71,17 @@ impl BinaryDownloader for RealDownloader {
 /// `.try_proxy_from_env(false)` pins ureq's own env detection off in every
 /// feature set — with `--all-features` its default would otherwise ignore
 /// `NO_PROXY` — and [`proxy_value`] applies the environment instead.
+///
+/// `.timeout_connect(timeout)` bounds the connection phase with the same
+/// budget: ureq 2's `.timeout()` explicitly does not cover the connect wait
+/// (its default 30 s connect timeout would otherwise outlive every caller's
+/// budget — a proxy or host that drops packets blocked for ~30 s per
+/// request).
 pub(crate) fn agent(url: &str, timeout: Duration) -> Result<ureq::Agent> {
     let (scheme, host) = authority(url);
     let mut builder = ureq::AgentBuilder::new()
         .timeout(timeout)
+        .timeout_connect(timeout)
         .try_proxy_from_env(false);
     if let Some(value) = proxy_value(&|name| std::env::var(name).ok(), &scheme, &host) {
         let proxy = ureq::Proxy::new(&value)
@@ -591,5 +598,84 @@ mod tests {
             .call()
             .expect_err("the redirect loop never resolves");
         assert_eq!(describe(&error), "too many redirects");
+    }
+
+    /// A connect that never completes must fail inside the caller's own
+    /// budget, not after ureq 2's 30 s default connect timeout. Offline and
+    /// deterministic: the loopback listener is never accepted, so its accept
+    /// backlog fills with `held` sockets and every further SYN is dropped —
+    /// the connect then hangs, which is exactly the phase `.timeout()` cannot
+    /// bound. If the backlog could not be filled the GET below would fail
+    /// fast anyway (the overall timeout bounds the reply wait), so the fill
+    /// is asserted before the request is made: that assertion is what keeps
+    /// the test honest. Total budget: fill ≤ 2 s, request bounded at 3 s
+    /// → < 5 s.
+    #[serial]
+    #[test]
+    fn a_hung_connect_fails_within_the_request_budget() {
+        let _env = EnvGuard::cleared(); // no proxy may hijack 127.0.0.1
+        let listener = TcpListener::bind("127.0.0.1:0").expect("loopback listener");
+        let addr = listener.local_addr().expect("listener address");
+        // No accept() below, ever.
+
+        // Fill the accept backlog; each attempt is itself bounded so the
+        // fill can never hang the suite. Loop exit on Err means the SYN was
+        // dropped. (If a platform ever refuses instead of dropping, fall
+        // back to pointing `HTTPS_PROXY` at this listener so the CONNECT
+        // never gets a reply.)
+        let mut held: Vec<std::net::TcpStream> = Vec::new();
+        let fill_deadline = std::time::Instant::now() + Duration::from_secs(2);
+        let fill_error = loop {
+            if std::time::Instant::now() >= fill_deadline || held.len() >= 8192 {
+                break None;
+            }
+            match std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(150)) {
+                Ok(stream) => held.push(stream),
+                Err(error) => break Some(error),
+            }
+        }
+        .expect(
+            "the accept backlog never filled, so the request below would \
+             not be exercising the connect phase at all",
+        );
+        assert_eq!(
+            fill_error.kind(),
+            std::io::ErrorKind::TimedOut,
+            "backlog-full must drop the SYN (hang), not refuse it: {fill_error:?}"
+        );
+
+        let url = format!("http://{addr}/hang");
+        let budget = Duration::from_millis(500);
+        let started = std::time::Instant::now();
+        let (tx, rx) = mpsc::channel::<Result<(), String>>();
+        let worker_url = url.clone();
+        let worker = std::thread::spawn(move || {
+            let outcome = agent(&worker_url, budget)
+                .map_err(|error| error.to_string())
+                .and_then(|client| {
+                    client
+                        .get(&worker_url)
+                        .call()
+                        .map(|_| ())
+                        .map_err(|error| describe(&error))
+                });
+            let _ = tx.send(outcome); // receiver may be gone on the failure path
+        });
+
+        // Without `.timeout_connect` this waits ~30 s (ureq 2's default), so
+        // the receive is bounded: the test must fail at 3 s, not hang the
+        // suite.
+        let outcome = rx
+            .recv_timeout(Duration::from_secs(3))
+            .expect("the connect must be bounded by the request budget, not ureq's 30 s default");
+        let elapsed = started.elapsed();
+        let error = outcome.expect_err("a dropped SYN can never complete a request");
+        assert!(!error.is_empty(), "the failure must name a cause");
+        assert!(
+            elapsed < Duration::from_secs(3),
+            "the request must fail inside its own budget, took {elapsed:?}"
+        );
+        worker.join().expect("worker already sent its result");
+        drop(held); // drain only after every assertion
     }
 }
