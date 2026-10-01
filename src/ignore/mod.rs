@@ -156,6 +156,9 @@ fn list(filter: Option<&str>) -> Result<()> {
 /// form would keep excluding the directory itself, which blocks the `!` negations
 /// the `agentic` template relies on to keep instruction files committable.
 fn merge_gitignore(path: &std::path::Path, new_content: &str) -> String {
+    if is_agentic_template(new_content) {
+        return merge_agentic(path, new_content);
+    }
     let existing = if path.exists() {
         fs::read_to_string(path).unwrap_or_default()
     } else {
@@ -213,6 +216,64 @@ fn merge_gitignore(path: &std::path::Path, new_content: &str) -> String {
     }
     result.push_str(&to_append);
     result
+}
+
+/// True only for the `agentic` template: it is the sole built-in whose
+/// content carries the canonical managed header. Every other template keeps
+/// the append-merge path above unchanged.
+fn is_agentic_template(new_content: &str) -> bool {
+    new_content
+        .lines()
+        .any(|line| line.trim() == agentic::CANONICAL_HEADER)
+}
+
+/// Managed merge for the `agentic` template: strip every managed header with
+/// the entries under it, then write exactly one rebuilt block where the first
+/// header was found (append when there was none). Re-running
+/// `gitkit ignore add agentic` therefore rewrites the block in place and the
+/// file comes out byte-identical.
+fn merge_agentic(path: &std::path::Path, new_content: &str) -> String {
+    let existing = if path.exists() {
+        fs::read_to_string(path).unwrap_or_default()
+    } else {
+        String::new()
+    };
+    let file_empty = existing.is_empty();
+    let fresh = agentic::split_fresh(new_content);
+    let stripped = agentic::strip_managed(&existing);
+    let kept = agentic::compute_kept(&stripped.collected, &fresh);
+    let block = agentic::assemble_managed(&fresh.ignores, &kept, &fresh.negations);
+    insert_agentic_block(stripped.outside, stripped.first_idx, block, file_empty)
+}
+
+/// Splices the rebuilt block into the outside lines at `first_idx`, keeping
+/// exactly one blank line before and after it: a missing separator is added,
+/// an adjacent blank is reused, and the top of a file needs no leading blank.
+/// Lines outside the block keep their order and their bytes.
+fn insert_agentic_block(
+    mut outside: Vec<String>,
+    first_idx: Option<usize>,
+    block: Vec<String>,
+    file_empty: bool,
+) -> String {
+    let mut at = first_idx.unwrap_or(outside.len());
+    if !file_empty && at > 0 && !outside[at - 1].is_empty() {
+        outside.insert(at, String::new());
+        at += 1;
+    }
+    let blank_after = at < outside.len() && !outside[at].is_empty();
+    let block_len = block.len();
+    for (offset, line) in block.into_iter().enumerate() {
+        outside.insert(at + offset, line);
+    }
+    if blank_after {
+        outside.insert(at + block_len, String::new());
+    }
+    let mut merged = outside.join("\n");
+    if !merged.is_empty() && !merged.ends_with('\n') {
+        merged.push('\n');
+    }
+    merged
 }
 
 #[cfg(test)]
@@ -357,10 +418,21 @@ skills-lock.json\n";
                 "{new} missing after merge"
             );
         }
-        // Entries with no replacement in the new template stay untouched.
-        for pattern in [".windsurf/", ".zencoder/", "skills-lock.json"] {
-            let count = merged.lines().filter(|l| *l == pattern).count();
-            assert_eq!(count, 1, "pattern {pattern} duplicated after merge");
+        // Entries gitkit itself shipped are legacy: the registry no longer
+        // produces them, so the managed merge drops them instead of carrying
+        // them over (spec req 2). `skills-lock.json` is still produced and
+        // comes back exactly once from the registry lines.
+        assert_eq!(
+            merged.lines().filter(|l| *l == "skills-lock.json").count(),
+            1,
+            "skills-lock.json duplicated after merge"
+        );
+        for retired in [".windsurf/", ".zencoder/"] {
+            assert_eq!(
+                merged.lines().filter(|l| *l == retired).count(),
+                0,
+                "legacy entry {retired} must be dropped, not kept"
+            );
         }
         // The upgraded file must keep instruction files committable.
         for negation in ["!.cursor/rules/", "!.continue/rules/", "!.claude/CLAUDE.md"] {
@@ -369,6 +441,296 @@ skills-lock.json\n";
                 "missing {negation} after merge"
             );
         }
+    }
+
+    /// gitkit's own committed `.gitignore` as it looked before this fix: ten
+    /// `# AI coding agents` headers, nine of them empty, each earlier run of
+    /// `ignore add agentic` appending a fresh pair of headers while deduping
+    /// the entries (reproduced 2026-10-01 on release build 18ac3b9).
+    const TEN_HEADER_FIXTURE: &str = r#"/target
+*.swp
+*.swo
+*~
+.DS_Store
+.env
+.vscode/
+.idea/
+*.log
+.kiro/
+.agents/
+.idea/
+skills-lock.json
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target
+*.mp4
+.mimocode/
+
+# AI coding agents
+.cursor/
+.windsurf/
+.claude/
+.continue/
+.copilot/
+.kilocode/
+.zencoder/
+.qwen/
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+
+# AI coding agents
+"#;
+
+    /// Runs the managed merge twice (writing the first result back) and
+    /// returns both outputs so callers can assert byte-identity.
+    fn merge_twice(fixture: &str) -> (String, String) {
+        let (_dir, path) = tmp_gitignore(fixture);
+        let agentic = builtins::get("agentic").unwrap();
+        let first = merge_gitignore(&path, &agentic);
+        fs::write(&path, &first).unwrap();
+        let second = merge_gitignore(&path, &agentic);
+        (first, second)
+    }
+
+    /// Req 5(a): the 10-header fixture collapses to exactly one canonical
+    /// header, keeps the content before the block verbatim, and the entries
+    /// the registry still produces reappear inside the single block.
+    #[test]
+    fn agentic_managed_ten_headers_collapse_to_one() {
+        let (_dir, path) = tmp_gitignore(TEN_HEADER_FIXTURE);
+        let agentic = builtins::get("agentic").unwrap();
+        let merged = merge_gitignore(&path, &agentic);
+        let lines: Vec<&str> = merged.lines().collect();
+
+        assert_eq!(
+            lines
+                .iter()
+                .filter(|l| **l == agentic::CANONICAL_HEADER)
+                .count(),
+            1,
+            "exactly one canonical header must remain: {merged:?}"
+        );
+        assert_eq!(
+            lines.iter().filter(|l| **l == "# AI coding agents").count(),
+            0,
+            "no bare header may remain: {merged:?}"
+        );
+        // grep -c '^# AI coding agents' over the result.
+        assert_eq!(
+            lines
+                .iter()
+                .filter(|l| l.starts_with("# AI coding agents"))
+                .count(),
+            1
+        );
+        assert_eq!(
+            lines.iter().filter(|l| **l == agentic::NEG_HEADER).count(),
+            1
+        );
+        // The entry lines of the first bare header were legacy wholesale
+        // forms; the block carries the registry's `/*` forms instead.
+        assert_eq!(lines.iter().filter(|l| **l == ".cursor/").count(), 0);
+        assert_eq!(lines.iter().filter(|l| **l == ".cursor/*").count(), 1);
+        assert_eq!(
+            lines.iter().filter(|l| **l == "skills-lock.json").count(),
+            2,
+            "one untouched line before the block + one registry line"
+        );
+        // Everything before the first managed header stays byte-identical:
+        // lines 1..=22 of the fixture (through the blank that preceded it).
+        let before: Vec<&str> = TEN_HEADER_FIXTURE.lines().take(22).collect();
+        assert_eq!(
+            &lines[..22],
+            &before[..],
+            "content before the block changed"
+        );
+    }
+
+    /// Req 4/5(b): every fixture merged twice comes out byte-identical.
+    #[test]
+    fn agentic_merge_twice_is_byte_identical() {
+        let user_block = "target/\n\n# AI coding agents\n.mytool/\n\n*.log\n";
+        let previous = "\n# AI coding agents\n.kiro/\n.cursor/\n.skills-lock.json\n";
+        for fixture in [
+            TEN_HEADER_FIXTURE,
+            user_block,
+            previous,
+            "",
+            "target/\n",
+            "\n",
+        ] {
+            let (first, second) = merge_twice(fixture);
+            assert_eq!(
+                first, second,
+                "second run must be byte-identical for fixture {fixture:?}"
+            );
+            // A third pass over the written second result changes nothing.
+            let (_dir, path) = tmp_gitignore(&second);
+            let agentic = builtins::get("agentic").unwrap();
+            let third = merge_gitignore(&path, &agentic);
+            assert_eq!(second, third, "third run diverged for {fixture:?}");
+        }
+    }
+
+    /// Req 5(c): a line the user added inside an old block survives under the
+    /// kept marker, exactly once, after the registry lines and before the
+    /// negations.
+    #[test]
+    fn agentic_merge_keeps_user_line_under_kept_marker() {
+        let (_dir, path) = tmp_gitignore("target/\n\n# AI coding agents\n.mytool/\n\n*.log\n");
+        let agentic = builtins::get("agentic").unwrap();
+        let merged = merge_gitignore(&path, &agentic);
+        let lines: Vec<&str> = merged.lines().collect();
+
+        assert_eq!(lines.iter().filter(|l| **l == ".mytool/").count(), 1);
+        let marker = lines.iter().position(|l| *l == agentic::KEPT_MARKER);
+        assert!(marker.is_some(), "kept marker missing: {merged:?}");
+        let marker = marker.unwrap();
+        let canonical = lines
+            .iter()
+            .position(|l| *l == agentic::CANONICAL_HEADER)
+            .expect("canonical header missing");
+        let negation = lines
+            .iter()
+            .position(|l| *l == agentic::NEG_HEADER)
+            .expect("negation header missing");
+        let mytool = lines.iter().position(|l| *l == ".mytool/").unwrap();
+        assert!(
+            canonical < marker && marker < mytool && mytool < negation,
+            ".mytool/ must sit under the kept marker, inside the block: {merged:?}"
+        );
+        // The kept marker appears exactly once, also after a second run.
+        let (first, second) = merge_twice("target/\n\n# AI coding agents\n.mytool/\n\n*.log\n");
+        assert_eq!(first, second);
+        assert_eq!(
+            second
+                .lines()
+                .filter(|l| *l == agentic::KEPT_MARKER)
+                .count(),
+            1
+        );
+    }
+
+    /// Req 5(d): content before and after the block is untouched, with the
+    /// single-blank joins the removal may leave behind.
+    #[test]
+    fn agentic_merge_preserves_surrounding_content() {
+        let fixture = "head-marker\ntarget/\n\n# AI coding agents\n.old/\n\n*.log\ntail-marker\n";
+        let (_dir, path) = tmp_gitignore(fixture);
+        let agentic = builtins::get("agentic").unwrap();
+        let merged = merge_gitignore(&path, &agentic);
+        let lines: Vec<&str> = merged.lines().collect();
+
+        // Head: verbatim prefix through the blank that preceded the block.
+        assert_eq!(&lines[..3], ["head-marker", "target/", ""]);
+        // Tail: one blank join, then the trailing lines verbatim, in order.
+        let tail = lines.len() - 3;
+        assert_eq!(&lines[tail..], ["", "*.log", "tail-marker"]);
+        let canonical = lines
+            .iter()
+            .position(|l| *l == agentic::CANONICAL_HEADER)
+            .unwrap();
+        assert!(canonical >= 3 && canonical < tail, "block misplaced");
+        assert!(merged.starts_with("head-marker\ntarget/\n\n"));
+        assert!(merged.ends_with("\n\n*.log\ntail-marker\n"));
+    }
+
+    /// Req 2: legacy entries gitkit shipped are dropped when the registry no
+    /// longer produces them; the marker is absent when nothing is kept.
+    #[test]
+    fn agentic_merge_drops_legacy_only_entries() {
+        let previous = "\n# AI coding agents\n\
+            .kiro/\n\
+            .cursor/\n\
+            .windsurf/\n\
+            .claude/\n\
+            .continue/\n\
+            .copilot/\n\
+            .kilocode/\n\
+            .zencoder/\n\
+            .qwen/\n\
+            .agents/\n\
+            skills-lock.json\n";
+        let (_dir, path) = tmp_gitignore(previous);
+        let agentic = builtins::get("agentic").unwrap();
+        let merged = merge_gitignore(&path, &agentic);
+        let lines: Vec<&str> = merged.lines().collect();
+
+        for legacy in [
+            ".kiro/",
+            ".cursor/",
+            ".windsurf/",
+            ".claude/",
+            ".continue/",
+            ".copilot/",
+            ".kilocode/",
+            ".zencoder/",
+            ".qwen/",
+            ".agents/",
+        ] {
+            assert_eq!(
+                lines.iter().filter(|l| **l == legacy).count(),
+                0,
+                "legacy entry {legacy} must be dropped: {merged:?}"
+            );
+        }
+        // Still-produced entries keep exactly one occurrence.
+        assert_eq!(
+            lines.iter().filter(|l| **l == "skills-lock.json").count(),
+            1
+        );
+        assert_eq!(lines.iter().filter(|l| **l == ".kiro/*").count(), 1);
+        assert_eq!(
+            lines.iter().filter(|l| **l == agentic::KEPT_MARKER).count(),
+            0,
+            "nothing survived, so no kept marker may appear"
+        );
+    }
+
+    /// Trap F: only the canonical header selects the managed path; a bare
+    /// header in new content stays an ordinary comment for the generic merge.
+    #[test]
+    fn merge_dispatches_to_the_managed_path_only_for_the_canonical_header() {
+        let fixture = "target/\n# AI coding agents\n.old/\n";
+        let (_dir, path) = tmp_gitignore(fixture);
+        let merged = merge_gitignore(&path, "# AI coding agents\n.another/\n");
+        assert_eq!(
+            merged
+                .lines()
+                .filter(|l| *l == "# AI coding agents")
+                .count(),
+            2,
+            "without the canonical header the generic append path applies"
+        );
+
+        let (_dir2, path2) = tmp_gitignore(fixture);
+        let agentic = builtins::get("agentic").unwrap();
+        let managed = merge_gitignore(&path2, &agentic);
+        assert_eq!(
+            managed
+                .lines()
+                .filter(|l| l.starts_with("# AI coding agents"))
+                .count(),
+            1,
+            "the managed path collapses the bare header into one block"
+        );
     }
 
     #[test]

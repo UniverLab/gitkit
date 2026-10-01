@@ -1,10 +1,204 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 #[cfg(test)]
 use super::agent_registry::snapshot_platforms;
 use super::agent_registry::Platform;
 #[cfg(not(test))]
 use super::agent_registry::Resolution;
+
+/// The header `assemble()` emits: the only one `gitkit ignore add agentic`
+/// writes. Its presence in new content is what selects the managed merge.
+pub(crate) const CANONICAL_HEADER: &str =
+    "# AI coding agents (paths derived from the canopy registry)";
+/// Marks the negation tail of the block; nothing but `!` lines may follow it.
+pub(crate) const NEG_HEADER: &str = "# instruction files stay committable";
+/// Marks entry lines carried over from a previous block that the registry no
+/// longer produces but gitkit never shipped itself (user-added lines).
+pub(crate) const KEPT_MARKER: &str = "# kept from a previous agentic block";
+
+/// Every header that opens a managed agentic block. Older gitkit versions
+/// appended one header per run (bare, canonical, negation), so a file may
+/// hold several of them; all are stripped and rebuilt as a single block.
+const MANAGED_HEADERS: &[&str] = &["# AI coding agents", CANONICAL_HEADER, NEG_HEADER];
+
+/// Entries gitkit itself shipped in older `agentic` blocks. When the registry
+/// no longer produces them they are dropped instead of kept under
+/// [`KEPT_MARKER`]: the `dir/` forms would block the `!` negations and the
+/// others were retired with their platforms. Exact list of the `previous`
+/// fixture in `merge_gitignore_agentic_merges_cleanly_with_previous_version`.
+const LEGACY_ENTRIES: &[&str] = &[
+    ".kiro/",
+    ".cursor/",
+    ".windsurf/",
+    ".claude/",
+    ".continue/",
+    ".copilot/",
+    ".kilocode/",
+    ".zencoder/",
+    ".qwen/",
+    ".agents/",
+    "skills-lock.json",
+];
+
+/// True for the managed headers of the agentic block, matched on the trimmed
+/// line so trailing spaces or a stray `\r` still count.
+pub(crate) fn is_managed_header(line: &str) -> bool {
+    MANAGED_HEADERS.contains(&line.trim())
+}
+
+/// An existing `.gitignore` split into the lines outside every managed block
+/// (verbatim, blank runs collapsed), the entry lines collected from inside
+/// the blocks, and the output index where the first managed header was found
+/// (`None` means the block is appended at the end).
+pub(crate) struct Stripped {
+    pub(crate) outside: Vec<String>,
+    pub(crate) collected: Vec<String>,
+    pub(crate) first_idx: Option<usize>,
+}
+
+/// Removes every managed header together with the entry lines that follow it
+/// up to the next blank line or the next `#` header, collecting those
+/// entries. The block's [`KEPT_MARKER`] is consumed in place so a re-run
+/// folds the previous kept section into the collected entries instead of
+/// leaving it behind as an outside comment.
+pub(crate) fn strip_managed(existing: &str) -> Stripped {
+    let mut outside: Vec<String> = Vec::new();
+    let mut collected: Vec<String> = Vec::new();
+    let mut first_idx: Option<usize> = None;
+    let mut collecting = false;
+    for line in existing.lines() {
+        if collecting {
+            if line.trim().is_empty() {
+                outside.push(line.to_string());
+                collecting = false;
+            } else if is_managed_header(line) {
+                // Chained header (the old append-per-run growth): the block
+                // continues, the header itself is rebuilt later.
+            } else if line.trim() == KEPT_MARKER {
+                // Rebuilt as part of the block; collect the entries below it.
+            } else if line.starts_with('#') {
+                outside.push(line.to_string());
+                collecting = false;
+            } else {
+                collected.push(line.to_string());
+            }
+        } else if is_managed_header(line) {
+            if first_idx.is_none() {
+                first_idx = Some(outside.len());
+            }
+            collecting = true;
+        } else {
+            outside.push(line.to_string());
+        }
+    }
+    let anchor = first_idx.unwrap_or(outside.len());
+    let (outside, removed) = collapse_blank_runs(outside, anchor);
+    Stripped {
+        outside,
+        collected,
+        first_idx: first_idx.map(|index| index - removed),
+    }
+}
+
+/// Folds runs of more than one empty line left behind by the removal into a
+/// single blank. `anchor` is the raw index of the managed-block insertion
+/// point; the returned count is how many blanks were dropped before it, so
+/// the caller can shift the index. Blank lines are never reordered and
+/// non-blank lines are never touched.
+fn collapse_blank_runs(raw: Vec<String>, anchor: usize) -> (Vec<String>, usize) {
+    let mut collapsed: Vec<String> = Vec::with_capacity(raw.len());
+    let mut removed_before_anchor = 0usize;
+    let mut previous_blank = false;
+    for (index, line) in raw.into_iter().enumerate() {
+        if line.is_empty() && previous_blank {
+            if index < anchor {
+                removed_before_anchor += 1;
+            }
+            continue;
+        }
+        previous_blank = line.is_empty();
+        collapsed.push(line);
+    }
+    (collapsed, removed_before_anchor)
+}
+
+/// The registry-derived part of an `agentic` template, split the way the
+/// managed block is written: ignore lines, negation lines, and a set for
+/// membership tests. Nothing is recomputed here, so the registry's path and
+/// negation rules stay untouched.
+pub(crate) struct Fresh {
+    pub(crate) ignores: Vec<String>,
+    pub(crate) negations: Vec<String>,
+    seen: HashSet<String>,
+}
+
+impl Fresh {
+    /// True when the registry still produces this entry line.
+    pub(crate) fn contains(&self, line: &str) -> bool {
+        self.seen.contains(line.trim())
+    }
+}
+
+pub(crate) fn split_fresh(new_content: &str) -> Fresh {
+    let mut fresh = Fresh {
+        ignores: Vec::new(),
+        negations: Vec::new(),
+        seen: HashSet::new(),
+    };
+    for line in new_content.lines() {
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        fresh.seen.insert(line.trim().to_string());
+        if line.starts_with('!') {
+            fresh.negations.push(line.to_string());
+        } else {
+            fresh.ignores.push(line.to_string());
+        }
+    }
+    fresh
+}
+
+/// Collected entries that are neither produced by the registry anymore nor
+/// gitkit's own legacy list: user lines carried over under [`KEPT_MARKER`],
+/// in first-seen order and deduplicated.
+pub(crate) fn compute_kept(collected: &[String], fresh: &Fresh) -> Vec<String> {
+    let mut kept: Vec<String> = Vec::new();
+    for line in collected {
+        let trimmed = line.trim();
+        if fresh.contains(trimmed) || LEGACY_ENTRIES.contains(&trimmed) {
+            continue;
+        }
+        if kept.iter().any(|previous| previous == line) {
+            continue;
+        }
+        kept.push(line.clone());
+    }
+    kept
+}
+
+/// The single managed block: canonical header, registry lines, kept lines
+/// under their marker, then the negations under [`NEG_HEADER`]. Never emits
+/// the bare `# AI coding agents` header.
+pub(crate) fn assemble_managed(
+    ignores: &[String],
+    kept: &[String],
+    negations: &[String],
+) -> Vec<String> {
+    let mut lines: Vec<String> = Vec::new();
+    lines.push(CANONICAL_HEADER.to_string());
+    lines.extend(ignores.iter().cloned());
+    if !kept.is_empty() {
+        lines.push(KEPT_MARKER.to_string());
+        lines.extend(kept.iter().cloned());
+    }
+    if !negations.is_empty() {
+        lines.push(String::new());
+        lines.push(NEG_HEADER.to_string());
+        lines.extend(negations.iter().cloned());
+    }
+    lines
+}
 
 pub(crate) fn build(platforms: &[Platform]) -> (Vec<String>, Vec<String>) {
     let protected = protected_set(platforms);
@@ -56,12 +250,11 @@ fn emit_warnings(warnings: &[String], notice: Option<&str>) {
 }
 
 fn assemble(lines: &[String]) -> String {
-    let mut content =
-        String::from("\n# AI coding agents (paths derived from the canopy registry)\n");
+    let mut content = format!("\n{CANONICAL_HEADER}\n");
     let mut in_negations = false;
     for line in lines {
         if !in_negations && line.starts_with('!') {
-            content.push_str("\n# instruction files stay committable\n");
+            content.push_str(&format!("\n{NEG_HEADER}\n"));
             in_negations = true;
         }
         content.push_str(line);
@@ -366,6 +559,53 @@ mod tests {
         assert!(
             lines[..at].contains(&".foo/*"),
             "ignore lines must precede the marker: {content:?}"
+        );
+    }
+
+    /// Plan §5(6): the rebuilt block puts the kept marker after the registry
+    /// lines, before a single blank + negation header, and never re-emits the
+    /// bare `# AI coding agents` header.
+    #[test]
+    fn assemble_managed_marker_placement() {
+        let lines = assemble_managed(
+            &[".foo/*".to_string()],
+            &[".mytool/".to_string()],
+            &["!keep/a.md".to_string()],
+        );
+        let rendered: Vec<&str> = lines.iter().map(String::as_str).collect();
+        assert_eq!(
+            rendered,
+            [
+                "# AI coding agents (paths derived from the canopy registry)",
+                ".foo/*",
+                "# kept from a previous agentic block",
+                ".mytool/",
+                "",
+                "# instruction files stay committable",
+                "!keep/a.md",
+            ]
+        );
+        assert_eq!(
+            rendered
+                .iter()
+                .filter(|l| **l == "# AI coding agents")
+                .count(),
+            0,
+            "the bare header must never be re-emitted"
+        );
+        // Without kept lines the marker disappears, the rest stays ordered.
+        let without_kept =
+            assemble_managed(&[".foo/*".to_string()], &[], &["!keep/a.md".to_string()]);
+        let rendered: Vec<&str> = without_kept.iter().map(String::as_str).collect();
+        assert_eq!(
+            rendered,
+            [
+                "# AI coding agents (paths derived from the canopy registry)",
+                ".foo/*",
+                "",
+                "# instruction files stay committable",
+                "!keep/a.md",
+            ]
         );
     }
 
