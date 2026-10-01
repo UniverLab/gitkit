@@ -704,6 +704,37 @@ skills-lock.json
         );
     }
 
+    /// A repeated template name (`ignore add agentic,agentic`) concatenates
+    /// the built-in twice; the managed block still carries every registry
+    /// line exactly once, and the result merges idempotently.
+    #[test]
+    fn agentic_merge_dedupes_repeated_template_content() {
+        let content = builtins::get("agentic").unwrap();
+        let doubled = format!("{content}{content}");
+        let (_dir, path) = tmp_gitignore("target/\n");
+        let merged = merge_gitignore(&path, &doubled);
+        for pattern in content
+            .lines()
+            .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        {
+            assert_eq!(
+                merged.lines().filter(|l| *l == pattern).count(),
+                1,
+                "pattern {pattern} duplicated from a repeated template"
+            );
+        }
+        assert_eq!(
+            merged
+                .lines()
+                .filter(|l| *l == agentic::CANONICAL_HEADER)
+                .count(),
+            1
+        );
+        fs::write(&path, &merged).unwrap();
+        let second = merge_gitignore(&path, &doubled);
+        assert_eq!(merged, second, "repeated content must merge idempotently");
+    }
+
     /// Trap F: only the canonical header selects the managed path; a bare
     /// header in new content stays an ordinary comment for the generic merge.
     #[test]

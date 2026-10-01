@@ -149,7 +149,12 @@ pub(crate) fn split_fresh(new_content: &str) -> Fresh {
         if line.is_empty() || line.starts_with('#') {
             continue;
         }
-        fresh.seen.insert(line.trim().to_string());
+        // One entry per line: a repeated template (`ignore add agentic,agentic`)
+        // concatenates the built-in twice, and the managed block must still
+        // hold each registry line exactly once.
+        if !fresh.seen.insert(line.trim().to_string()) {
+            continue;
+        }
         if line.starts_with('!') {
             fresh.negations.push(line.to_string());
         } else {
@@ -607,6 +612,21 @@ mod tests {
                 "!keep/a.md",
             ]
         );
+    }
+
+    /// A template name repeated in the list concatenates the built-in twice;
+    /// the registry lines enter `Fresh` once — compared on trimmed bytes, so
+    /// padded duplicates fold too — and `contains` still answers for them.
+    #[test]
+    fn split_fresh_dedupes_repeated_lines() {
+        let fresh = split_fresh(".foo/*\n!keep/a.md\n\n .foo/*\n!keep/a.md \n.bar\n");
+        let ignores: Vec<&str> = fresh.ignores.iter().map(String::as_str).collect();
+        assert_eq!(ignores, [".foo/*", ".bar"]);
+        let negations: Vec<&str> = fresh.negations.iter().map(String::as_str).collect();
+        assert_eq!(negations, ["!keep/a.md"]);
+        assert!(fresh.contains(".foo/*"));
+        assert!(fresh.contains(".foo/*  "));
+        assert!(fresh.contains("!keep/a.md"));
     }
 
     /// An input that opens with a negation still gets the marker, once, and
