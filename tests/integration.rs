@@ -509,6 +509,53 @@ fn cli_ignore_add_agentic_behind_dead_proxy_names_the_fetch_failure() {
     );
 }
 
+/// `cache_path` is what ties the registry cache to `$GITKIT_HOME`. With a
+/// fresh cache on disk the fetch must be skipped entirely (so no failure
+/// notice) and the cached platform must drive the rendered template — both
+/// hold only when the cache location resolves to the real file.
+#[test]
+fn cli_ignore_add_agentic_fresh_cache_is_used_without_any_fetch() {
+    let dir = TempDir::new().unwrap();
+    std::fs::create_dir(dir.path().join(".git")).unwrap();
+    let fetched_at = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("system clock is before the unix epoch")
+        .as_secs() as i64;
+    std::fs::write(
+        dir.path().join("agent-registry.toml"),
+        format!(
+            "fetched_at = {fetched_at}\n\n[[platforms]]\nname = \"cached\"\nproject_paths = [\".cached-probe/\"]\n"
+        ),
+    )
+    .expect("cache file must be writable");
+    let binary = gitkit_binary();
+    let output = Command::new(&binary)
+        // Never let a test hit the network via the update check.
+        .env("GITKIT_NO_UPDATE_CHECK", "1")
+        .env("HOME", dir.path())
+        .env("GITKIT_HOME", dir.path())
+        // Loopback-only dead proxy: were the cache missed, the fetch would
+        // fail and the notice plus the embedded snapshot would show up.
+        .env("HTTPS_PROXY", "http://127.0.0.1:9")
+        .env("HTTP_PROXY", "http://127.0.0.1:9")
+        .env("NO_PROXY", "")
+        .args(["ignore", "add", "--yes", "--dry-run", "agentic"])
+        .current_dir(dir.path())
+        .output()
+        .expect("Failed to run gitkit");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "stderr: {stderr}");
+    assert!(
+        stdout.contains(".cached-probe/*"),
+        "the fresh $GITKIT_HOME cache must drive the template: {stdout}"
+    );
+    assert!(
+        !stderr.contains("canopy registry fetch failed"),
+        "a fresh cache must short-circuit the network fetch: {stderr}"
+    );
+}
+
 #[test]
 fn cli_attributes_init_dry_run() {
     let dir = TempDir::new().unwrap();

@@ -324,6 +324,22 @@ mod tests {
         assert_eq!(platforms[1].project_paths, vec!["bar.json"]);
     }
 
+    /// Every cache test above compares `now_epoch()` against itself, so all
+    /// of them keep passing if the clock helper collapses to a constant.
+    /// This pins it to the real wall clock the TTL is measured against.
+    #[test]
+    fn now_epoch_is_within_a_minute_of_the_wall_clock() {
+        let wall = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("system clock is before the unix epoch")
+            .as_secs() as i64;
+        let epoch = now_epoch();
+        assert!(
+            (epoch - wall).abs() < 60,
+            "now_epoch() returned {epoch}, wall clock is {wall}"
+        );
+    }
+
     #[test]
     fn remaining_timeout_shrinks_and_expires() {
         let start = Instant::now();

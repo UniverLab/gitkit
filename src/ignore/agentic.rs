@@ -91,11 +91,13 @@ fn protected_set(platforms: &[Platform]) -> BTreeSet<String> {
     protected
 }
 
+/// Never-ignore roots: gitkit must not hide `.github`/`.config` (its own
+/// configuration directories), neither the bare root nor anything under it.
+/// The `"<root>/"` equality cases are covered by the prefix checks, so only
+/// the bare roots are compared literally.
 fn is_forbidden(path: &str) -> bool {
     path == ".github"
         || path == ".config"
-        || path == ".github/"
-        || path == ".config/"
         || path.starts_with(".github/")
         || path.starts_with(".config/")
 }
@@ -143,7 +145,14 @@ fn negations(protected: &BTreeSet<String>, dirs: &BTreeSet<String>) -> Vec<Strin
         };
         let mut current = parent;
         let mut chain = vec![path.clone()];
-        while current != ignored {
+        // Bounded walk: every real step shortens `current`, so the chain of
+        // ancestors runs out long before `path.len()` steps and always passes
+        // `ignored` first. The cap keeps a non-productive `ancestor_dir` from
+        // spinning here forever; it is never reached by the real chain.
+        for _ in 0..=path.len() {
+            if current == ignored {
+                break;
+            }
             chain.push(current.clone());
             current = ancestor_dir(&current);
         }
@@ -205,7 +214,14 @@ mod tests {
         }));
         assert_eq!(warnings.len(), 1);
         assert!(warnings[0].contains("evil"));
-        for entry in [".github", ".config", ".config/x/", ".github/y"] {
+        for entry in [
+            ".github",
+            ".config",
+            ".github/",
+            ".config/",
+            ".config/x/",
+            ".github/y",
+        ] {
             let fixture = format!("[[platforms]]\nname = \"p\"\nproject_paths = [\"{entry}\"]\n");
             let (lines, warnings) = build(&platforms_of(&fixture));
             assert!(!lines.iter().any(|l| {
@@ -312,6 +328,67 @@ mod tests {
         assert!(negs.iter().any(|l| l.as_str() == "!.claude/CLAUDE.md"));
         assert!(negs.iter().any(|l| l.as_str() == "!.continue/rules/"));
         assert!(negs.iter().any(|l| l.as_str() == "!.cursor/rules/"));
+    }
+
+    /// The comment that marks the negation block is emitted exactly once, on
+    /// the line before the first `!` entry — not before the first ignore line
+    /// and not dropped when the input already starts with a negation.
+    #[test]
+    fn assemble_comment_marks_the_negation_block_in_place() {
+        let content = assemble(&[
+            ".foo/*".to_string(),
+            "bar.json".to_string(),
+            "!keep/one.md".to_string(),
+            "!keep/two.md".to_string(),
+        ]);
+        let marker = "# instruction files stay committable";
+        let lines: Vec<&str> = content.lines().collect();
+        let hits: Vec<usize> = lines
+            .iter()
+            .enumerate()
+            .filter(|(_, line)| **line == marker)
+            .map(|(index, _)| index)
+            .collect();
+        assert_eq!(
+            hits.len(),
+            1,
+            "the marker must appear exactly once: {content:?}"
+        );
+        let at = hits[0];
+        assert!(
+            lines.get(at + 1).is_some_and(|next| next.starts_with('!')),
+            "the line after the marker must be the first negation: {content:?}"
+        );
+        assert!(
+            lines[at + 1..].iter().all(|line| line.starts_with('!')),
+            "nothing but negations may follow the marker: {content:?}"
+        );
+        assert!(
+            lines[..at].contains(&".foo/*"),
+            "ignore lines must precede the marker: {content:?}"
+        );
+    }
+
+    /// An input that opens with a negation still gets the marker, once, and
+    /// never an ignore line after it.
+    #[test]
+    fn assemble_comment_when_the_first_line_is_a_negation() {
+        let content = assemble(&["!keep/one.md".to_string()]);
+        let marker = "# instruction files stay committable";
+        let lines: Vec<&str> = content.lines().collect();
+        assert_eq!(lines.iter().filter(|l| **l == marker).count(), 1);
+        assert!(
+            lines.contains(&"!keep/one.md"),
+            "the negation itself must be kept: {content:?}"
+        );
+        assert!(
+            lines
+                .iter()
+                .skip_while(|l| **l != marker)
+                .skip(1)
+                .all(|l| l.starts_with('!')),
+            "nothing but negations may follow the marker: {content:?}"
+        );
     }
 }
 
