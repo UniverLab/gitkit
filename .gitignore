@@ -20,30 +20,43 @@ skills-lock.json
 *.mp4
 .mimocode/
 
-# AI coding agents
-.cursor/
-.windsurf/
-.claude/
-.continue/
-.copilot/
-.kilocode/
-.zencoder/
-.qwen/
+# AI coding agents (paths derived from the canopy registry)
+.agents/*
+.blackboxcli/*
+.claude/*
+.cline/*
+.clineignore
+.codebuddy/*
+.codex/*
+.commandcode/*
+.continue/*
+.copilot/*
+.cursor/*
+.cursorignore
+.cursorindexingignore
+.devin/*
+.gemini/*
+.kilo/*
+.kilocode/*
+.kiro/*
+.mcp.json
+.mimocode/*
+.opencode/*
+.qoder/*
+.qwen/*
+.utim/*
+.utim_tmp/*
+.vibe/*
+CLAUDE.local.md
+kilo.json
+kilo.jsonc
+mimocode.json
+mimocode.jsonc
+opencode.json
+opencode.jsonc
+skills-lock.json
 
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
-
-# AI coding agents
+# instruction files stay committable
+!.claude/CLAUDE.md
+!.continue/rules/
+!.cursor/rules/

@@ -1,0 +1,697 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1440" height="1026" viewBox="0 0 1440 1026">
+<style>
+@font-face{font-family:'ds-term';src:url(data:font/ttf;base64,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AAUACPQwMRcRIRUjETMV4QEY09OKA4I+/Po+AAABAF//dgF3AvgABwAlugAEAAgACRESOQC4AAcvuAACL7kAAwAI9LgABxC5AAYACPQwMQERITUzESM1AXf+6NPTAvj8fj4DBj4AAAEAWv92Af4C+AADABW6AAMABAAFERI5ALgAAS+4AAAvMDEXATMBWgFcSP6kigOC/H4AAgASAAACRgK6AAMABwBTugAFAAgACRESObgABRC4AAPQALgAAEVYuAAALxu5AAAAHD5ZuAAARVi4AAcvG7kABwAOPlm6AAMABwAAERI5uAADL7oABAAHAAAREjm4AAQvMDEBMwMjBzMDIwH+SKBIrEigSAK6/tRi/tQAAAEAKwBIAi0COAAOABG6AA4ADwAQERI5ALgABi8wMTcnNyc3FzUzFTcXBxcHJ685fMcVx0rHFcd8OX1IKqpCQkDY2EBCQqoqrAAAAQA0AMUCJAGdABkASboAAwAaABsREjkAuwAGAAgADQAEK7gABhC4AADcugAJAAYAABESOX24AAkvGLgAABC5ABMACPS6ABYADQATERI5fLgAFi8YMDElIiYnLgEjIgYHJz4BMzIWFx4BMz4BNxcOAQGSJjUdGigTHScQPRFGOyY0HBwoEyEmDT0WSMUrIiImPk0OXGQqISQmAUs/DmtVAAIAPgCsAhoBuAADAAcAKboABAAIAAkREjm4AAQQuAAA0AC7AAEACAAAAAQruwAFAAgABAAEKzAxEzUhFQU1IRU+Adz+JAHcAXRERMhERAAAAQBVABACAwJSAAcAFboAAQAIAAkREjkAugAHAAQAAyswMTclNSU1BRUFVQFj/p0Brv5SY8kIyVX5UPkAAwAy/48CKAMrACcALgA1AKe6AAcANgA3ERI5uAAHELgAK9C4AAcQuAAz0AC4AABFWLgAES8buQARABw+WbgAAEVYuAAALxu5AAAADj5ZuQAHAAv0uAARELkALAAL9LoACAAsAAAREjm4ABEQuAAS3LgAERC4ABTQuAAsELgAG9C4AAcQuAAz0LoAHAAUADMREjm4AAAQuAAl0LgAABC4ACfcugArABEABxESOboAMgAbACUREjkwMQUuASc3HgEXEScuAzU0Njc1MxUeARcHLgEnFRceAxUUBgcVIwMUFhc1DgEBNCYnFT4BARdTbiQ9JFA1FzRGKhJt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) format('truetype');font-weight:normal;font-style:normal}
+@keyframes k0{0%{opacity:0}0.5102%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k1{0%{opacity:0}16.8367%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k2{0%{opacity:0}18.8776%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k3{0%{opacity:0}27.551%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k4{0%{opacity:0}27.551%{opacity:1}100%{opacity:0}}
+@keyframes k5{0%{opacity:0}27.551%{opacity:1}54.5918%{opacity:0}100%{opacity:0}}
+@keyframes k6{0%{opacity:0}27.551%{opacity:1}43.3673%{opacity:0}100%{opacity:0}}
+@keyframes k7{0%{opacity:0}29.0816%{opacity:1}54.5918%{opacity:0}100%{opacity:0}}
+@keyframes k8{0%{opacity:0}29.0816%{opacity:1}43.3673%{opacity:0}100%{opacity:0}}
+@keyframes k9{0%{opacity:0}43.3673%{opacity:1}54.5918%{opacity:0}100%{opacity:0}}
+@keyframes k10{0%{opacity:0}43.3673%{opacity:1}54.5918%{opacity:0}55.6122%{opacity:1}58.6735%{opacity:0}100%{opacity:0}}
+@keyframes k11{0%{opacity:0}54.5918%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k12{0%{opacity:0}55.6122%{opacity:1}58.6735%{opacity:0}100%{opacity:0}}
+@keyframes k13{0%{opacity:0}55.6122%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k14{0%{opacity:0}58.6735%{opacity:1}100%{opacity:0}}
+@keyframes k15{0%{opacity:0}58.6735%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k16{0%{opacity:0}59.6939%{opacity:1}100%{opacity:0}}
+@keyframes k17{0%{opacity:0}59.6939%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k18{0%{opacity:0}59.6939%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k19{0%{opacity:0}59.6939%{opacity:1}65.3061%{opacity:0}66.3265%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k20{0%{opacity:0}59.6939%{opacity:1}66.3265%{opacity:0}67.3469%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k21{0%{opacity:0}59.6939%{opacity:1}67.3469%{opacity:0}68.3673%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k22{0%{opacity:0}59.6939%{opacity:1}68.3673%{opacity:0}69.3878%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k23{0%{opacity:0}59.6939%{opacity:1}69.3878%{opacity:0}100%{opacity:0}}
+@keyframes k24{0%{opacity:0}65.3061%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k25{0%{opacity:0}69.3878%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k26{0%{opacity:0}72.449%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k27{0%{opacity:0}72.449%{opacity:1}79.5918%{opacity:0}100%{opacity:0}}
+@keyframes k28{0%{opacity:0}79.5918%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k29{0%{opacity:0}86.7347%{opacity:1}100%{opacity:0}}
+@keyframes k30{0%{opacity:0}27.551%{opacity:1}100%{opacity:0}}
+@keyframes k31{0%{opacity:0}27.551%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k32{0%{opacity:0}86.7347%{opacity:1}100%{opacity:0}}
+@keyframes k33{0%{opacity:0}0.5102%{opacity:1}1.0204%{opacity:0}100%{opacity:0}}
+@keyframes k34{0%{opacity:0}1.0204%{opacity:1}1.5306%{opacity:0}100%{opacity:0}}
+@keyframes k35{0%{opacity:0}1.5306%{opacity:1}2.0408%{opacity:0}100%{opacity:0}}
+@keyframes k36{0%{opacity:0}2.0408%{opacity:1}2.551%{opacity:0}100%{opacity:0}}
+@keyframes k37{0%{opacity:0}2.551%{opacity:1}3.0612%{opacity:0}100%{opacity:0}}
+@keyframes k38{0%{opacity:0}3.0612%{opacity:1}3.5714%{opacity:0}100%{opacity:0}}
+@keyframes k39{0%{opacity:0}3.5714%{opacity:1}4.0816%{opacity:0}100%{opacity:0}}
+@keyframes k40{0%{opacity:0}4.0816%{opacity:1}4.5918%{opacity:0}100%{opacity:0}}
+@keyframes k41{0%{opacity:0}4.5918%{opacity:1}5.102%{opacity:0}100%{opacity:0}}
+@keyframes k42{0%{opacity:0}5.102%{opacity:1}5.6122%{opacity:0}100%{opacity:0}}
+@keyframes k43{0%{opacity:0}5.6122%{opacity:1}6.1224%{opacity:0}100%{opacity:0}}
+@keyframes k44{0%{opacity:0}6.1224%{opacity:1}6.6327%{opacity:0}100%{opacity:0}}
+@keyframes k45{0%{opacity:0}6.6327%{opacity:1}7.1429%{opacity:0}100%{opacity:0}}
+@keyframes k46{0%{opacity:0}7.1429%{opacity:1}7.6531%{opacity:0}100%{opacity:0}}
+@keyframes k47{0%{opacity:0}7.6531%{opacity:1}8.1633%{opacity:0}100%{opacity:0}}
+@keyframes k48{0%{opacity:0}8.1633%{opacity:1}8.6735%{opacity:0}100%{opacity:0}}
+@keyframes k49{0%{opacity:0}8.6735%{opacity:1}9.1837%{opacity:0}100%{opacity:0}}
+@keyframes k50{0%{opacity:0}9.1837%{opacity:1}9.6939%{opacity:0}100%{opacity:0}}
+@keyframes k51{0%{opacity:0}9.6939%{opacity:1}10.2041%{opacity:0}100%{opacity:0}}
+@keyframes k52{0%{opacity:0}10.2041%{opacity:1}10.7143%{opacity:0}100%{opacity:0}}
+@keyframes k53{0%{opacity:0}10.7143%{opacity:1}11.2245%{opacity:0}100%{opacity:0}}
+@keyframes k54{0%{opacity:0}11.2245%{opacity:1}11.7347%{opacity:0}100%{opacity:0}}
+@keyframes k55{0%{opacity:0}11.7347%{opacity:1}12.2449%{opacity:0}100%{opacity:0}}
+@keyframes k56{0%{opacity:0}12.2449%{opacity:1}12.7551%{opacity:0}100%{opacity:0}}
+@keyframes k57{0%{opacity:0}12.7551%{opacity:1}13.2653%{opacity:0}100%{opacity:0}}
+@keyframes k58{0%{opacity:0}13.2653%{opacity:1}13.7755%{opacity:0}100%{opacity:0}}
+@keyframes k59{0%{opacity:0}13.7755%{opacity:1}14.2857%{opacity:0}100%{opacity:0}}
+@keyframes k60{0%{opacity:0}14.2857%{opacity:1}14.7959%{opacity:0}100%{opacity:0}}
+@keyframes k61{0%{opacity:0}14.7959%{opacity:1}15.3061%{opacity:0}100%{opacity:0}}
+@keyframes k62{0%{opacity:0}15.3061%{opacity:1}15.8163%{opacity:0}100%{opacity:0}}
+@keyframes k63{0%{opacity:0}15.8163%{opacity:1}16.3265%{opacity:0}100%{opacity:0}}
+@keyframes k64{0%{opacity:0}16.3265%{opacity:1}16.8367%{opacity:0}100%{opacity:0}}
+@keyframes k65{0%{opacity:0}27.551%{opacity:1}29.0816%{opacity:0}100%{opacity:0}}
+@keyframes k66{0%{opacity:0}29.0816%{opacity:1}34.6939%{opacity:0}100%{opacity:0}}
+@keyframes k67{0%{opacity:0}34.6939%{opacity:1}43.3673%{opacity:0}100%{opacity:0}}
+@keyframes k68{0%{opacity:0}43.3673%{opacity:1}53.5714%{opacity:0}54.0816%{opacity:1}54.5918%{opacity:0}100%{opacity:0}}
+@keyframes k69{0%{opacity:0}53.5714%{opacity:1}54.0816%{opacity:0}100%{opacity:0}}
+@keyframes k70{0%{opacity:0}55.6122%{opacity:1}57.6531%{opacity:0}100%{opacity:0}}
+@keyframes k71{0%{opacity:0}57.6531%{opacity:1}58.6735%{opacity:0}100%{opacity:0}}
+@keyframes k72{0%{opacity:0}58.6735%{opacity:1}59.6939%{opacity:0}100%{opacity:0}}
+@keyframes k73{0%{opacity:0}59.6939%{opacity:1}65.3061%{opacity:0}100%{opacity:0}}
+@keyframes k74{0%{opacity:0}65.3061%{opacity:1}66.3265%{opacity:0}100%{opacity:0}}
+@keyframes k75{0%{opacity:0}66.3265%{opacity:1}67.3469%{opacity:0}100%{opacity:0}}
+@keyframes k76{0%{opacity:0}67.3469%{opacity:1}68.3673%{opacity:0}100%{opacity:0}}
+@keyframes k77{0%{opacity:0}68.3673%{opacity:1}69.3878%{opacity:0}100%{opacity:0}}
+@keyframes k78{0%{opacity:0}69.3878%{opacity:1}71.4286%{opacity:0}100%{opacity:0}}
+@keyframes k79{0%{opacity:0}71.4286%{opacity:1}72.449%{opacity:0}100%{opacity:0}}
+@keyframes k80{0%{opacity:0}72.449%{opacity:1}78.5714%{opacity:0}100%{opacity:0}}
+@keyframes k81{0%{opacity:0}78.5714%{opacity:1}79.5918%{opacity:0}100%{opacity:0}}
+@keyframes k82{0%{opacity:0}79.5918%{opacity:1}85.7143%{opacity:0}100%{opacity:0}}
+@keyframes k83{0%{opacity:0}85.7143%{opacity:1}86.7347%{opacity:0}100%{opacity:0}}
+@keyframes k84{0%{opacity:0}87.2449%{opacity:1}100%{opacity:0}}
+#final{display:none}
+@media (prefers-reduced-motion: reduce){#anim{display:none}#final{display:inline}}
+</style>
+<defs>
+<g id="r0">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
+</g>
+<g id="r1">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ g</text>
+</g>
+<g id="r2">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="50" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ git</text>
+</g>
+<g id="r3">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="60" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitk</text>
+</g>
+<g id="r4">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="80" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit</text>
+</g>
+<g id="r5">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="100" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit c</text>
+</g>
+<g id="r6">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="110" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit cl</text>
+</g>
+<g id="r7">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="130" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clon</text>
+</g>
+<g id="r8">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="140" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone</text>
+</g>
+<g id="r9">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="160" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone h</text>
+</g>
+<g id="r10">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="180" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone htt</text>
+</g>
+<g id="r11">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https</text>
+</g>
+<g id="r12">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="210" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https:</text>
+</g>
+<g id="r13">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://</text>
+</g>
+<g id="r14">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="250" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://gi</text>
+</g>
+<g id="r15">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="260" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://git</text>
+</g>
+<g id="r16">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="280" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://githu</text>
+</g>
+<g id="r17">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="300" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.</text>
+</g>
+<g id="r18">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="310" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.c</text>
+</g>
+<g id="r19">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="330" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com</text>
+</g>
+<g id="r20">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="350" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/U</text>
+</g>
+<g id="r21">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="360" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Un</text>
+</g>
+<g id="r22">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="380" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univ</text>
+</g>
+<g id="r23">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="400" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univer</text>
+</g>
+<g id="r24">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="410" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerl</text>
+</g>
+<g id="r25">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="430" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab</text>
+</g>
+<g id="r26">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="450" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab/g</text>
+</g>
+<g id="r27">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="460" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab/gi</text>
+</g>
+<g id="r28">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="480" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab/gitk</text>
+</g>
+<g id="r29">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="490" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab/gitki</text>
+</g>
+<g id="r30">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="510" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab/gitkit.</text>
+</g>
+<g id="r31">
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="530" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$ gitkit clone https://github.com/Univerlab/gitkit.gi</text>
+</g>
+<g id="r32">
+<text x="0" y="546" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="546" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ]</text>
+<text x="60" y="546" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="990" lengthAdjust="spacingAndGlyphs" xml:space="preserve">no-trailers               (commit-msg)  —  Rejects commit messages carrying AI attribution trailers</text>
+<text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="950" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] no-secrets                (pre-commit)  —  Detects common secret patterns in staged changes</text>
+</g>
+<g id="r33">
+<text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ]</text>
+</g>
+<g id="r34">
+<text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+</g>
+<g id="r35">
+<text x="20" y="584" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ]</text>
+</g>
+<g id="r36">
+<text x="20" y="584" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+</g>
+<g id="r37">
+<text x="0" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">?</text>
+<text x="0" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+<text x="60" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="500" lengthAdjust="spacingAndGlyphs" xml:space="preserve">line-endings  ★ recommended  —  * text=auto eol=lf</text>
+<text x="20" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="680" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] binary-files  —  mark images, PDFs, archives as binary (no diff)</text>
+<text x="0" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="390" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[space select  enter confirm  esc skip]</text>
+</g>
+<g id="r38">
+<text x="0" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+<text x="60" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="630" lengthAdjust="spacingAndGlyphs" xml:space="preserve">push.autoSetupRemote = true  —  auto-set upstream on first push</text>
+</g>
+<g id="r39">
+<text x="0" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+<text x="60" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="870" lengthAdjust="spacingAndGlyphs" xml:space="preserve">help.autocorrect = prompt  —  suggest corrections for mistyped commands [✓ already set]</text>
+</g>
+<g id="r40">
+<text x="0" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+<text x="60" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="750" lengthAdjust="spacingAndGlyphs" xml:space="preserve">diff.algorithm = histogram  —  cleaner diffs for moved code [✓ already set]</text>
+</g>
+<g id="r41">
+<text x="0" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ]</text>
+<text x="60" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="620" lengthAdjust="spacingAndGlyphs" xml:space="preserve">merge.conflictstyle = zdiff3  —  show base in conflict markers</text>
+</g>
+<g id="r42">
+<text x="0" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+<text x="60" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="810" lengthAdjust="spacingAndGlyphs" xml:space="preserve">rerere.enabled = true  —  remember and reuse conflict resolutions [✓ already set]</text>
+</g>
+<g id="r43">
+<text x="20" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ]</text>
+</g>
+<g id="r44">
+<text x="20" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text>
+</g>
+<g id="r45">
+<text x="20" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="260" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Apply these changes? (Y/n)</text>
+</g>
+<g id="r46">
+<text x="20" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="280" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Apply these changes? (Y/n) y</text>
+</g>
+<g id="r47">
+<text x="20" y="983" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="500" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Save this configuration as a reusable build? (y/N)</text>
+</g>
+<g id="r48">
+<text x="20" y="983" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="520" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Save this configuration as a reusable build? (y/N) n</text>
+</g>
+<g id="r49">
+<text x="0" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" font-weight="bold" fill="#00cd00" textLength="160" lengthAdjust="spacingAndGlyphs" xml:space="preserve">gitkit@univerlab</text>
+<text x="160" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">:</text>
+<text x="170" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" font-weight="bold" fill="#0000ee" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">~</text>
+<text x="180" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
+</g>
+</defs>
+<rect x="0" y="0" width="1440" height="1026" rx="8" fill="#0b0f14"/>
+<g id="anim">
+<g id="pb">
+</g>
+<g id="states">
+<use href="#r0" xlink:href="#r0" style="animation:k33 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r1" xlink:href="#r1" style="animation:k34 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r2" xlink:href="#r2" style="animation:k35 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r3" xlink:href="#r3" style="animation:k36 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r4" xlink:href="#r4" style="animation:k37 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r5" xlink:href="#r5" style="animation:k38 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r6" xlink:href="#r6" style="animation:k39 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r7" xlink:href="#r7" style="animation:k40 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r8" xlink:href="#r8" style="animation:k41 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r9" xlink:href="#r9" style="animation:k42 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r10" xlink:href="#r10" style="animation:k43 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r11" xlink:href="#r11" style="animation:k44 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r12" xlink:href="#r12" style="animation:k45 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r13" xlink:href="#r13" style="animation:k46 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r14" xlink:href="#r14" style="animation:k47 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r15" xlink:href="#r15" style="animation:k48 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r16" xlink:href="#r16" style="animation:k49 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r17" xlink:href="#r17" style="animation:k50 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r18" xlink:href="#r18" style="animation:k51 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r19" xlink:href="#r19" style="animation:k52 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r20" xlink:href="#r20" style="animation:k53 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r21" xlink:href="#r21" style="animation:k54 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r22" xlink:href="#r22" style="animation:k55 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r23" xlink:href="#r23" style="animation:k56 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r24" xlink:href="#r24" style="animation:k57 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r25" xlink:href="#r25" style="animation:k58 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r26" xlink:href="#r26" style="animation:k59 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r27" xlink:href="#r27" style="animation:k60 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r28" xlink:href="#r28" style="animation:k61 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r29" xlink:href="#r29" style="animation:k62 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r30" xlink:href="#r30" style="animation:k63 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r31" xlink:href="#r31" style="animation:k64 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r32" xlink:href="#r32" style="animation:k65 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r33" xlink:href="#r33" style="animation:k66 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r34" xlink:href="#r34" style="animation:k67 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r35" xlink:href="#r35" style="animation:k68 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r36" xlink:href="#r36" style="animation:k69 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r35" xlink:href="#r35" style="animation:k70 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r36" xlink:href="#r36" style="animation:k71 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r37" xlink:href="#r37" style="animation:k72 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r38" xlink:href="#r38" style="animation:k73 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r39" xlink:href="#r39" style="animation:k74 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r40" xlink:href="#r40" style="animation:k75 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r41" xlink:href="#r41" style="animation:k76 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r42" xlink:href="#r42" style="animation:k77 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r43" xlink:href="#r43" style="animation:k78 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r44" xlink:href="#r44" style="animation:k79 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r45" xlink:href="#r45" style="animation:k80 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r46" xlink:href="#r46" style="animation:k81 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r47" xlink:href="#r47" style="animation:k82 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r48" xlink:href="#r48" style="animation:k83 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+<use href="#r49" xlink:href="#r49" style="animation:k84 13.066666666666666s steps(1,end) infinite;opacity:0"/>
+</g>
+<g id="pt">
+<g style="animation:k0 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" font-weight="bold" fill="#00cd00" textLength="160" lengthAdjust="spacingAndGlyphs" xml:space="preserve">gitkit@univerlab</text> <text x="160" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">:</text> <text x="170" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" font-weight="bold" fill="#0000ee" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">~</text></g>
+<text x="180" y="33" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="540" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k1 13.066666666666666s steps(1,end) infinite;opacity:0">$ gitkit clone https://github.com/Univerlab/gitkit.git</text>
+<text x="20" y="90" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k2 13.066666666666666s steps(1,end) infinite;opacity:0">◇ cloning repository...</text>
+<g style="animation:k3 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="109" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ clone completed  ✓</text> <text x="20" y="147" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="240" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ running gitkit init...</text> <text x="20" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Configure your git repo</text> <text x="20" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="220" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Saved builds available</text> <text x="250" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="250" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Start fresh configuration</text> <text x="20" y="508" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="50" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Hooks</text></g>
+<text x="0" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k4 13.066666666666666s steps(1,end) infinite;opacity:0">&gt;</text>
+<g style="animation:k5 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="508" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">?</text> <text x="20" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text> <text x="60" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="800" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conventional-commits      (commit-msg)  —  Validates Conventional Commits format</text> <text x="20" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="1040" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] no-invisibles             (pre-commit)  —  Rejects added lines carrying invisible Unicode characters</text> <text x="20" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="870" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] no-body                   (commit-msg)  —  Rejects a commit message that has a body</text> <text x="0" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="1330" lengthAdjust="spacingAndGlyphs" xml:space="preserve">v [ ] message-rules             (commit-msg)  —  Validates commit messages against user-defined regex rules in .gitmessage-rules.json</text> <text x="0" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="480" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[↑↓ move  space select  enter confirm  esc skip]</text></g>
+<text x="20" y="584" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="870" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k6 13.066666666666666s steps(1,end) infinite;opacity:0">[ ] branch-naming             (pre-commit)  —  Validates branch name matches convention</text>
+<text x="20" y="546" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="1030" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k7 13.066666666666666s steps(1,end) infinite;opacity:0">[ ] no-trailers               (commit-msg)  —  Rejects commit messages carrying AI attribution trailers</text>
+<g style="animation:k8 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="60" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="910" lengthAdjust="spacingAndGlyphs" xml:space="preserve">no-secrets                (pre-commit)  —  Detects common secret patterns in staged changes</text></g>
+<g style="animation:k9 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text> <text x="60" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="910" lengthAdjust="spacingAndGlyphs" xml:space="preserve">no-secrets                (pre-commit)  —  Detects common secret patterns in staged changes</text> <text x="60" y="584" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="830" lengthAdjust="spacingAndGlyphs" xml:space="preserve">branch-naming             (pre-commit)  —  Validates branch name matches convention</text></g>
+<text x="0" y="584" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k10 13.066666666666666s steps(1,end) infinite;opacity:0">&gt;</text>
+<g style="animation:k11 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="508" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="80" y="508" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1360" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conventional-commits      (commit-msg)  —  Validates Conventional Commits format, no-secrets                (pre-commit)  —  Detects com</text> <text x="0" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="370" lengthAdjust="spacingAndGlyphs" xml:space="preserve">mon secret patterns in staged changes</text></g>
+<g style="animation:k12 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">?</text> <text x="60" y="584" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="70" lengthAdjust="spacingAndGlyphs" xml:space="preserve">agentic</text> <text x="20" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="60" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] 1c</text> <text x="20" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="130" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] 1c-bitrix</text> <text x="20" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="110" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] a-frame</text> <text x="20" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="160" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] actionscript</text> <text x="20" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="70" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] ada</text> <text x="20" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="90" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] adobe</text> <text x="20" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="210" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] advancedinstaller</text> <text x="20" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[ ] adventuregamestudio</text> <text x="0" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="100" lengthAdjust="spacingAndGlyphs" xml:space="preserve">v [ ] agda</text> <text x="0" y="774" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="640" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[Type to filter  ↑↓ move  space select  enter confirm  esc skip]</text></g>
+<text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k13 13.066666666666666s steps(1,end) infinite;opacity:0">.gitignore templates</text>
+<text x="0" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k14 13.066666666666666s steps(1,end) infinite;opacity:0">&gt;</text>
+<g style="animation:k15 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="230" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="70" lengthAdjust="spacingAndGlyphs" xml:space="preserve">agentic</text> <text x="20" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="140" lengthAdjust="spacingAndGlyphs" xml:space="preserve">.gitattributes</text></g>
+<text x="0" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k16 13.066666666666666s steps(1,end) infinite;opacity:0">&gt;</text>
+<g style="animation:k17 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="170" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="500" lengthAdjust="spacingAndGlyphs" xml:space="preserve">line-endings  ★ recommended  —  * text=auto eol=lf</text> <text x="20" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="100" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Git config</text></g>
+<g style="animation:k18 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">?</text> <text x="0" y="774" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="480" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[↑↓ move  space select  enter confirm  esc skip]</text></g>
+<g style="animation:k19 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text> <text x="60" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="870" lengthAdjust="spacingAndGlyphs" xml:space="preserve">help.autocorrect = prompt  —  suggest corrections for mistyped commands [✓ already set]</text></g>
+<g style="animation:k20 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text> <text x="60" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="750" lengthAdjust="spacingAndGlyphs" xml:space="preserve">diff.algorithm = histogram  —  cleaner diffs for moved code [✓ already set]</text></g>
+<text x="20" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="660" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k21 13.066666666666666s steps(1,end) infinite;opacity:0">[ ] merge.conflictstyle = zdiff3  —  show base in conflict markers</text>
+<g style="animation:k22 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text> <text x="60" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="810" lengthAdjust="spacingAndGlyphs" xml:space="preserve">rerere.enabled = true  —  remember and reuse conflict resolutions [✓ already set]</text></g>
+<text x="20" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="780" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k23 13.066666666666666s steps(1,end) infinite;opacity:0">[ ] core.pager = delta  —  beautiful syntax-highlighted diffs (requires cargo)</text>
+<g style="animation:k24 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">[x]</text> <text x="60" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="630" lengthAdjust="spacingAndGlyphs" xml:space="preserve">push.autoSetupRemote = true  —  auto-set upstream on first push</text></g>
+<g style="animation:k25 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="60" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="740" lengthAdjust="spacingAndGlyphs" xml:space="preserve">core.pager = delta  —  beautiful syntax-highlighted diffs (requires cargo)</text></g>
+<g style="animation:k26 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="130" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1310" lengthAdjust="spacingAndGlyphs" xml:space="preserve">push.autoSetupRemote = true  —  auto-set upstream on first push, help.autocorrect = prompt  —  suggest corrections for mistyped com</text> <text x="0" y="660" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1440" lengthAdjust="spacingAndGlyphs" xml:space="preserve">mands [✓ already set], diff.algorithm = histogram  —  cleaner diffs for moved code [✓ already set], rerere.enabled = true  —  remember and reuse</text> <text x="10" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1120" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conflict resolutions [✓ already set], core.pager = delta  —  beautiful syntax-highlighted diffs (requires cargo)</text> <text x="20" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="80" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Summary:</text> <text x="20" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="410" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ hooks: conventional-commits, no-secrets</text> <text x="20" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="210" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ .gitignore: agentic</text> <text x="20" y="774" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="300" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ .gitattributes: line-endings</text> <text x="20" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="960" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ git config: push.autoSetupRemote, help.autocorrect, diff.algorithm, rerere.enabled, core.pager</text></g>
+<text x="0" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve" style="animation:k27 13.066666666666666s steps(1,end) infinite;opacity:0">?</text>
+<g style="animation:k28 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="0" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="20" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Apply these changes?</text> <text x="230" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Yes</text> <text x="20" y="869" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="420" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ hook 'conventional-commits' installed  ✓</text> <text x="20" y="888" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="320" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ hook 'no-secrets' installed  ✓</text> <text x="20" y="907" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ .gitignore updated  ✓</text> <text x="20" y="926" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="270" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ .gitattributes applied  ✓</text> <text x="20" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ git config applied  ✓</text> <text x="0" y="983" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">?</text></g>
+<g style="animation:k29 13.066666666666666s steps(1,end) infinite;opacity:0"><text x="20" y="52" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ cloning repository...</text> <text x="20" y="71" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ clone completed  ✓</text> <text x="20" y="109" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="240" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ running gitkit init...</text> <text x="20" y="394" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Configure your git repo</text> <text x="0" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="20" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="220" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Saved builds available</text> <text x="250" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="250" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Start fresh configuration</text> <text x="20" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="50" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Hooks</text> <text x="80" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1360" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conventional-commits      (commit-msg)  —  Validates Conventional Commits format, no-secrets                (pre-commit)  —  Detects com</text> <text x="0" y="489" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="370" lengthAdjust="spacingAndGlyphs" xml:space="preserve">mon secret patterns in staged changes</text> <text x="0" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="20" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">.gitignore templates</text> <text x="230" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="70" lengthAdjust="spacingAndGlyphs" xml:space="preserve">agentic</text> <text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="140" lengthAdjust="spacingAndGlyphs" xml:space="preserve">.gitattributes</text> <text x="170" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="500" lengthAdjust="spacingAndGlyphs" xml:space="preserve">line-endings  ★ recommended  —  * text=auto eol=lf</text> <text x="20" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="100" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Git config</text> <text x="130" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1310" lengthAdjust="spacingAndGlyphs" xml:space="preserve">push.autoSetupRemote = true  —  auto-set upstream on first push, help.autocorrect = prompt  —  suggest corrections for mistyped com</text> <text x="0" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1440" lengthAdjust="spacingAndGlyphs" xml:space="preserve">mands [✓ already set], diff.algorithm = histogram  —  cleaner diffs for moved code [✓ already set], rerere.enabled = true  —  remember and reuse</text> <text x="10" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1120" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conflict resolutions [✓ already set], core.pager = delta  —  beautiful syntax-highlighted diffs (requires cargo)</text> <text x="20" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="80" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Summary:</text> <text x="20" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="410" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ hooks: conventional-commits, no-secrets</text> <text x="20" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="210" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ .gitignore: agentic</text> <text x="20" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="300" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ .gitattributes: line-endings</text> <text x="20" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="960" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ git config: push.autoSetupRemote, help.autocorrect, diff.algorithm, rerere.enabled, core.pager</text> <text x="0" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="20" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Apply these changes?</text> <text x="230" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Yes</text> <text x="20" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="420" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ hook 'conventional-commits' installed  ✓</text> <text x="20" y="850" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="320" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ hook 'no-secrets' installed  ✓</text> <text x="20" y="869" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ .gitignore updated  ✓</text> <text x="20" y="888" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="270" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ .gitattributes applied  ✓</text> <text x="20" y="907" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ git config applied  ✓</text> <text x="0" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text> <text x="20" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="440" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Save this configuration as a reusable build?</text> <text x="470" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="20" lengthAdjust="spacingAndGlyphs" xml:space="preserve">No</text> <text x="20" y="983" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="40" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Done</text></g>
+<g style="animation:k30 13.066666666666666s steps(1,end) infinite;opacity:0"><rect x="110" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="180" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="210" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="270" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="380" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="450" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="480" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="160" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="170" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="270" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="430" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="440" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="60" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="110" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="180" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="270" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="310" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="320" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="380" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="450" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="60" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="110" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="270" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="300" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="310" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="320" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="380" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="0" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="60" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="110" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="190" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="270" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="310" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="320" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="380" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="460" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="60" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="260" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="300" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="310" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="370" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="60" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="60" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/></g>
+<g style="animation:k31 13.066666666666666s steps(1,end) infinite;opacity:0"><rect x="260" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="300" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="110" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="120" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="250" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="380" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="390" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="160" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="210" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="220" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="350" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="430" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="480" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="490" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="40" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="90" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="150" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="160" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="210" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="360" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="420" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="430" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="480" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="100" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="300" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="370" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="0" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="110" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="220" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="230" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="240" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="270" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="320" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="380" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="490" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="500" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="510" y="285" width="10" height="19" fill="#c8c8c8"/> <rect x="0" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="110" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="140" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="190" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="210" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="220" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="230" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="270" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="310" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="320" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="350" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="380" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="410" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="460" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="480" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="490" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="500" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="30" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="50" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="80" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="90" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="100" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="110" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="120" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="130" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="190" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="200" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="210" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="220" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="250" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="260" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="270" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="280" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="300" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="310" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="320" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="330" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="340" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="360" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="370" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="380" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="390" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="400" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="460" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="470" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="480" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="490" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="342" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="342" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="342" width="10" height="19" fill="#c8c8c8"/> <rect x="60" y="342" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="342" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="342" width="10" height="19" fill="#c8c8c8"/> <rect x="0" y="361" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="361" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="361" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="361" width="10" height="19" fill="#c8c8c8"/> <rect x="40" y="361" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="361" width="10" height="19" fill="#c8c8c8"/> <rect x="60" y="361" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="361" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="380" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="380" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="30" y="380" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="380" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="50" y="380" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="60" y="380" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/></g>
+<g style="animation:k32 13.066666666666666s steps(1,end) infinite;opacity:0"><rect x="110" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="170" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="180" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="210" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="270" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="300" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="380" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="440" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="450" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="480" y="152" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="110" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="120" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="160" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="170" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="190" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="200" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="250" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="260" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="270" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="280" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="290" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="380" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="390" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="430" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="440" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="460" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="470" y="171" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="40" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="60" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="160" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="220" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="190" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="310" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="320" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="350" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="430" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="490" y="190" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="20" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="40" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="50" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="60" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="70" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="80" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="90" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="110" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="120" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="130" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="150" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="210" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="300" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="310" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="320" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="360" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="380" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="390" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="400" y="209" width="10" height="19" fill="#c8c8c8"/> <rect x="420" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="480" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="0" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="100" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="170" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="300" y="228" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="370" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="440" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="0" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="220" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="230" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="240" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="490" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="500" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="510" y="247" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="100" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="140" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="180" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="210" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="220" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="230" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="260" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="330" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="340" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="350" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="370" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="410" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="450" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="480" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="490" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="500" y="266" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="30" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="90" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="110" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="120" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="130" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="180" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="190" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="200" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="210" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="220" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="250" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="270" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="280" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="320" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="330" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="340" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="360" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="380" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="390" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="400" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="450" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="460" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="470" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="480" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="490" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="10" y="304" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="0" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="30" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="40" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="50" y="323" width="10" height="19" fill="#c8c8c8"/> <rect x="10" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="20" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="30" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="40" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/> <rect x="60" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/></g>
+</g>
+</g>
+<g id="final">
+<rect x="0" y="0" width="1440" height="1026" rx="8" fill="#0b0f14"/>
+<rect x="110" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="120" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="130" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="170" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="180" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="190" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="210" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="260" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="270" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="300" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="380" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="390" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="400" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="440" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="450" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="460" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="480" y="152" width="10" height="19" fill="#c8c8c8"/>
+<rect x="100" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="110" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="120" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="160" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="170" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="180" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="190" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="250" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="260" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="270" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="370" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="380" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="390" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="430" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="440" y="171" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="450" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="460" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="171" width="10" height="19" fill="#c8c8c8"/>
+<rect x="20" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="40" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="50" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="60" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="100" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="110" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="120" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="130" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="160" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="170" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="180" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="190" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="210" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="220" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="260" y="190" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="270" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="310" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="320" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="330" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="340" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="350" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="370" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="380" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="390" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="400" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="430" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="440" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="450" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="460" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="480" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="490" y="190" width="10" height="19" fill="#c8c8c8"/>
+<rect x="10" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="20" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="40" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="50" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="60" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="90" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="100" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="110" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="120" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="130" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="150" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="160" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="170" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="180" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="190" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="210" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="260" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="270" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="300" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="310" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="320" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="330" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="340" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="360" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="370" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="380" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="390" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="400" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="420" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="430" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="440" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="450" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="460" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="209" width="10" height="19" fill="#c8c8c8"/>
+<rect x="480" y="209" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="0" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="10" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="20" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="50" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="60" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="100" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="110" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="120" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="130" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="170" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="180" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="190" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="260" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="270" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="300" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="310" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="320" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="330" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="370" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="380" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="390" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="400" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="440" y="228" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="450" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="460" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="228" width="10" height="19" fill="#c8c8c8"/>
+<rect x="0" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="10" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="20" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="50" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="60" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="100" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="110" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="120" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="130" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="170" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="180" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="190" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="220" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="230" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="240" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="260" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="270" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="300" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="310" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="320" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="330" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="340" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="370" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="380" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="390" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="400" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="440" y="247" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="450" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="460" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="490" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="500" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="510" y="247" width="10" height="19" fill="#c8c8c8"/>
+<rect x="0" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="10" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="20" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="40" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="50" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="60" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="100" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="110" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="120" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="130" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="140" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="170" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="180" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="190" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="200" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="210" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="220" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="230" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="260" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="270" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="280" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="290" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="310" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="320" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="330" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="340" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="350" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="370" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="380" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="390" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="400" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="410" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="440" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="450" y="266" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="460" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="470" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="480" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="490" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="500" y="266" width="10" height="19" fill="#c8c8c8"/>
+<rect x="10" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="20" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="30" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="40" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="50" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="60" y="285" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="285" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="285" width="10" height="19" fill="#c8c8c8"/>
+<rect x="90" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="100" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="110" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="120" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="130" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="180" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="190" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="200" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="210" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="220" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="250" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="260" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="270" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="280" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="300" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="310" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="320" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="330" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="340" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="360" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="370" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="380" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="390" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="400" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="450" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="460" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="470" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="480" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="490" y="285" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="10" y="304" width="10" height="19" fill="#c8c8c8"/>
+<rect x="20" y="304" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="304" width="10" height="19" fill="#c8c8c8"/>
+<rect x="50" y="304" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="60" y="304" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="304" width="10" height="19" fill="#c8c8c8"/>
+<rect x="80" y="304" width="10" height="19" fill="#c8c8c8"/>
+<rect x="0" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="10" y="323" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="20" y="323" width="10" height="19" fill="#c8c8c8"/>
+<rect x="30" y="323" width="10" height="19" fill="#c8c8c8"/>
+<rect x="40" y="323" width="10" height="19" fill="#c8c8c8"/>
+<rect x="50" y="323" width="10" height="19" fill="#c8c8c8"/>
+<rect x="60" y="323" width="10" height="19" fill="#c8c8c8"/>
+<rect x="70" y="323" width="10" height="19" fill="#c8c8c8"/>
+<rect x="10" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="20" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="30" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="40" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="50" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<rect x="60" y="342" width="10" height="19" fill="#c8c8c8" fill-opacity="0.251"/>
+<text x="20" y="52" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ cloning repository...</text>
+<text x="20" y="71" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ clone completed  ✓</text>
+<text x="20" y="109" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="240" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ running gitkit init...</text>
+<text x="20" y="394" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Configure your git repo</text>
+<text x="0" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="220" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Saved builds available</text>
+<text x="250" y="432" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="250" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Start fresh configuration</text>
+<text x="0" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="50" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Hooks</text>
+<text x="80" y="470" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1360" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conventional-commits      (commit-msg)  —  Validates Conventional Commits format, no-secrets                (pre-commit)  —  Detects com</text>
+<text x="0" y="489" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="370" lengthAdjust="spacingAndGlyphs" xml:space="preserve">mon secret patterns in staged changes</text>
+<text x="0" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">.gitignore templates</text>
+<text x="230" y="527" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="70" lengthAdjust="spacingAndGlyphs" xml:space="preserve">agentic</text>
+<text x="0" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="140" lengthAdjust="spacingAndGlyphs" xml:space="preserve">.gitattributes</text>
+<text x="170" y="565" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="500" lengthAdjust="spacingAndGlyphs" xml:space="preserve">line-endings  ★ recommended  —  * text=auto eol=lf</text>
+<text x="0" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="100" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Git config</text>
+<text x="130" y="603" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1310" lengthAdjust="spacingAndGlyphs" xml:space="preserve">push.autoSetupRemote = true  —  auto-set upstream on first push, help.autocorrect = prompt  —  suggest corrections for mistyped com</text>
+<text x="0" y="622" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1440" lengthAdjust="spacingAndGlyphs" xml:space="preserve">mands [✓ already set], diff.algorithm = histogram  —  cleaner diffs for moved code [✓ already set], rerere.enabled = true  —  remember and reuse</text>
+<text x="10" y="641" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="1120" lengthAdjust="spacingAndGlyphs" xml:space="preserve">conflict resolutions [✓ already set], core.pager = delta  —  beautiful syntax-highlighted diffs (requires cargo)</text>
+<text x="20" y="679" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="80" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Summary:</text>
+<text x="20" y="698" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="410" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ hooks: conventional-commits, no-secrets</text>
+<text x="20" y="717" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="210" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ .gitignore: agentic</text>
+<text x="20" y="736" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="300" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ .gitattributes: line-endings</text>
+<text x="20" y="755" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="960" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◆ git config: push.autoSetupRemote, help.autocorrect, diff.algorithm, rerere.enabled, core.pager</text>
+<text x="0" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="200" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Apply these changes?</text>
+<text x="230" y="793" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="30" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Yes</text>
+<text x="20" y="831" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="420" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ hook 'conventional-commits' installed  ✓</text>
+<text x="20" y="850" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="320" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ hook 'no-secrets' installed  ✓</text>
+<text x="20" y="869" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ .gitignore updated  ✓</text>
+<text x="20" y="888" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="270" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ .gitattributes applied  ✓</text>
+<text x="20" y="907" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="230" lengthAdjust="spacingAndGlyphs" xml:space="preserve">◇ git config applied  ✓</text>
+<text x="0" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ff00" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">&gt;</text>
+<text x="20" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="440" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Save this configuration as a reusable build?</text>
+<text x="470" y="945" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#00ffff" textLength="20" lengthAdjust="spacingAndGlyphs" xml:space="preserve">No</text>
+<text x="20" y="983" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="40" lengthAdjust="spacingAndGlyphs" xml:space="preserve">Done</text>
+<text x="0" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" font-weight="bold" fill="#00cd00" textLength="160" lengthAdjust="spacingAndGlyphs" xml:space="preserve">gitkit@univerlab</text>
+<text x="160" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">:</text>
+<text x="170" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" font-weight="bold" fill="#0000ee" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">~</text>
+<text x="180" y="1021" font-family="'ds-term', 'IBM Plex Mono', monospace" font-size="16" fill="#c8c8c8" textLength="10" lengthAdjust="spacingAndGlyphs" xml:space="preserve">$</text>
+</g>
+</svg>

@@ -1,5 +1,7 @@
-//! Update check: looks for a newer GitHub release and, on confirmation,
-//! hands off to [`install`] to replace the running binary.
+//! Update check: looks for a newer GitHub release and prints a one-line
+//! notice pointing at `gitkit update`. It never prompts and never installs —
+//! the explicit command in [`update`] is the only path that replaces the
+//! binary, and it always asks first.
 //!
 //! Called once from `main`, before any subcommand runs — gitkit's own
 //! binary is never invoked from inside a git hook (the hooks it installs
@@ -12,7 +14,14 @@ use std::time::Duration;
 
 use serde::Deserialize;
 
-mod install;
+mod http;
+#[cfg(test)]
+mod tests;
+pub mod update;
+
+#[cfg(not(test))]
+pub(crate) use http::agent;
+pub use update::run_update;
 
 const GITHUB_REPO: &str = "UniverLab/gitkit";
 const HTTP_TIMEOUT: Duration = Duration::from_secs(3);
@@ -32,8 +41,8 @@ pub fn check_for_update() {
         return;
     };
 
-    let current = format!("v{}", env!("CARGO_PKG_VERSION"));
-    if !is_newer(&current, &latest) {
+    let current = update::current_version();
+    if !is_newer(current, &latest) {
         return;
     }
 
@@ -42,25 +51,18 @@ pub fn check_for_update() {
         return;
     }
 
-    println!("  \x1b[33m⬆  Update available:\x1b[0m {current} → {latest}");
-    let Ok(install) = inquire::Confirm::new("Install now?")
-        .with_default(true)
-        .prompt()
-    else {
-        return;
-    };
-    if !install {
-        println!();
-        return;
-    }
-
-    install::run(&latest);
+    println!(
+        "  \x1b[33m⬆  Update available:\x1b[0m {current} → {}",
+        update::display_version(&latest)
+    );
+    println!("     Run \x1b[36mgitkit update\x1b[0m when you want it — gitkit never replaces itself on your behalf.");
 }
 
 fn fetch_latest_tag() -> Option<String> {
     let url = format!("https://api.github.com/repos/{GITHUB_REPO}/releases/latest");
-    let resp = ureq::get(&url)
-        .timeout(HTTP_TIMEOUT)
+    let resp = http::agent(&url, HTTP_TIMEOUT)
+        .ok()?
+        .get(&url)
         .set("User-Agent", "gitkit-autoupdate")
         .call()
         .ok()?;
@@ -87,55 +89,4 @@ fn is_newer(current: &str, latest: &str) -> bool {
         )
     };
     parse(latest) > parse(current)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn is_newer_minor_version() {
-        assert!(is_newer("v0.9.0", "v0.10.0"));
-    }
-
-    #[test]
-    fn is_newer_major_version() {
-        assert!(is_newer("v0.99.99", "v1.0.0"));
-    }
-
-    #[test]
-    fn is_newer_equal_versions_not_newer() {
-        assert!(!is_newer("v0.4.0", "v0.4.0"));
-    }
-
-    #[test]
-    fn is_newer_older_is_not_newer() {
-        assert!(!is_newer("v1.0.0", "v0.9.0"));
-    }
-
-    #[test]
-    fn is_newer_handles_missing_v_prefix_on_current() {
-        assert!(is_newer("0.4.0", "v0.5.0"));
-    }
-
-    #[test]
-    fn is_newer_handles_missing_v_prefix_on_latest() {
-        assert!(is_newer("v0.4.0", "0.5.0"));
-    }
-
-    #[test]
-    fn is_newer_handles_missing_v_prefix_on_both() {
-        assert!(is_newer("0.4.0", "0.5.0"));
-    }
-
-    #[test]
-    fn update_check_disabled_when_var_is_set() {
-        assert!(update_check_disabled(Some(String::new())));
-        assert!(update_check_disabled(Some("1".to_string())));
-    }
-
-    #[test]
-    fn update_check_not_disabled_when_var_is_absent() {
-        assert!(!update_check_disabled(None));
-    }
 }

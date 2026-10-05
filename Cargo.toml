@@ -1,6 +1,6 @@
 [package]
 name = "gitkit"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 description = "Standalone CLI for configuring git repos — hooks, .gitignore, and .gitattributes"
 license = "MIT"
@@ -23,10 +23,14 @@ tar = "0.4"
 toml = "0.8"
 regex = "1"
 ureq = "2"
+# SHA256 verification of release assets (same file install.sh checks).
+sha2 = "0.10"
+# Staging an in-place binary replacement needs a same-directory temp file,
+# so tempfile is production code, not just a dev dependency.
+tempfile = "3"
 
 [dev-dependencies]
 serial_test = "3.5.0"
-tempfile = "3"
 
 [dependencies.inquire]
-version = "0.7"
+version = "0.9"

@@ -824,6 +824,7 @@ mod tests {
         }
     }
 
+    #[serial]
     #[test]
     fn git_config_set_global() {
         let result = git_config_set("gitkit.test.global-key", "test-global", ConfigScope::Global);

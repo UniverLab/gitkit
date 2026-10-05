@@ -36,11 +36,13 @@ project with one command.
 - **Curated git config** — practical presets with `--global`/`--local`
   scope and idempotency detection.
 - **Builds** — save a configuration once, apply it everywhere.
-- **Self-update** — gitkit checks GitHub for newer releases and updates itself automatically.
+- **Self-update** — gitkit checks GitHub for newer releases in the background,
+  and `gitkit update` installs a newer stable release on demand — always after
+  asking you first.
 
 ## How the documentation is organized
 
-- [Installation](installation.md) — install, update (including automatic self-updates), and uninstall.
+- [Installation](installation.md) — install, update (background check or the explicit `gitkit update`), and uninstall.
 - [Quick Start](quickstart.md) — the wizard and the one-liner workflow.
 - [Hooks](hooks.md) — built-in and custom hooks.
 - [Lock](lock.md) — block commits and/or pushes for an agent session, and its limits.

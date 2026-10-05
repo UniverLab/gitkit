@@ -1,7 +1,14 @@
 [demo]
 name = "demo"
 output_dir = "./dist"
+speed = "2x"
+targets = ["gif", "mp4", "svg"]
 prompt = '\[\e[1;32m\]gitkit@univerlab\[\e[0m\]:\[\e[1;34m\]~\[\e[0m\]$ '
+
+# `demo record` starts the PTY in $HOME; clone into a scratch dir instead.
+[env]
+setup_script = "rm -rf /tmp/gitkit-demo && mkdir -p /tmp/gitkit-demo && cd /tmp/gitkit-demo"
+teardown_script = "rm -rf /tmp/gitkit-demo"
 
 [typing]
 base_ms = 80
@@ -51,8 +58,9 @@ action = "keypress"
 key = "enter"
 
 [[timeline]]
-action = "wait_for_quiet"
-quiet_ms = 1500
+action = "wait_for_screen"
+match = "esc skip"
+timeout_ms = 60000
 
 [[timeline]]
 action = "keypress"
