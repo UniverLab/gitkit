@@ -29,7 +29,7 @@ Set up a git repo the way you actually work — one guided flow for hooks, `.git
 
 ### Demo
 
-![Demo](demo/dist/demo.gif)
+![gitkit clone: hooks, .gitignore, .gitattributes and git config set up in one guided flow](demo/dist/demo.svg)
 
 ---
 

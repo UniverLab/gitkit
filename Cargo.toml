@@ -1,6 +1,6 @@
 [package]
 name = "gitkit"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 description = "Standalone CLI for configuring git repos — hooks, .gitignore, and .gitattributes"
 license = "MIT"
