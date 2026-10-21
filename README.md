@@ -1,16 +1,6 @@
-```
-           ███   █████    █████       ███   █████   
-          ░░░   ░░███    ░░███       ░░░   ░░███    
-  ███████ ████  ███████   ░███ █████ ████  ███████  
- ███░░███░░███ ░░░███░    ░███░░███ ░░███ ░░░███░   
-░███ ░███ ░███   ░███     ░██████░   ░███   ░███    
-░███ ░███ ░███   ░███ ███ ░███░░███  ░███   ░███ ███
-░░███████ █████  ░░█████  ████ █████ █████  ░░█████ 
- ░░░░░███░░░░░    ░░░░░  ░░░░ ░░░░░ ░░░░░    ░░░░░  
- ███ ░███                                           
-░░██████                                            
- ░░░░░░                                             
-```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/UniverLab/.github/main/assets/banner-gitkit.svg" alt="GitKit"/>
+</p>
 
 <p align="center">
   <a href="https://github.com/UniverLab/gitkit/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/UniverLab/gitkit/ci.yml?branch=main&style=for-the-badge&label=CI" alt="CI"/></a>
